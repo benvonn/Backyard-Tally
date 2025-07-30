@@ -1,7 +1,5 @@
 # Backyard Tally
 
-# Deploymemt Link
-   https://capston1-1.onrender.com
    
 Backyard Tally is the ultimate online leaderboard and scorekeeper for cornhole enthusiasts, designed to bring a competitive edge to every backyard game. With real-time scoring, detailed player stats, and custom leaderboards, it’s never been easier to track your victories and climb the ranks. Share your wins, revisit match history, and even compete globally—all from a sleek, mobile-friendly platform. Whether you're playing casually with friends or vying for top bragging rights, Backyard Tally ensures every toss counts. Let the games begin! 🎯
 
