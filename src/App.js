@@ -1,25 +1,21 @@
-import logo from './logo.svg';
 import './App.css';
+import {Routes, Route} from 'react-router-dom';
+import LandingPage from './client/gameboard/LandingPage.js';
+import UserProfile from './client/user-profile/UserProfile.js';
+import UserSetup from './client/setup/UserSetup.js';
+import BoardSetup from './client/setup/UserBoard.js';
 
 function App() {
-  return (
+  return(
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/user/setup/profile" element={<UserSetup />} />
+        <Route path="/user/setup/board" element={<BoardSetup />} />
+        <Route path="/user/profile" element={<UserProfile />} />
+      </Routes>
     </div>
-  );
+  )
 }
 
 export default App;

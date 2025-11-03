@@ -1,0 +1,18 @@
+import {React, useState, useEffect} from "react";
+
+function casual_header(){
+    return(
+        <div className="casualHeaderWrapper">
+            <section classname="hamburgerButton">
+                <button className="hamburgerButton"/>
+            </section>
+            <section classname="casualheader">
+                <h2 className="scoreLabel">Score:</h2>
+                <h1 classname="scoreUserOne">0</h1>
+                <h1 classname="scoreUserTwo">0</h1>
+            </section>
+
+        </div>
+    )
+
+}
