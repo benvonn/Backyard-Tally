@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import {ReactComponent as CloseIcon} from "../components/Icons/closeCircle.svg";
+import {ReactComponent as CloseIcon} from "./Icons/closeCircle.svg";
 
 const SCloseButton = styled(CloseIcon)`
   position: absolute;

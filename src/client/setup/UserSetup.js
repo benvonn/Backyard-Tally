@@ -3,6 +3,8 @@ import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
 
 export default function UserSetup() {
+
+    const URL = 'https://localhost:7157';
     const [formData, setFormData] = useState({
         name: "",
         passcode: ""
@@ -17,9 +19,24 @@ export default function UserSetup() {
     useEffect(() => {
             localStorage.setItem("userProfile", JSON.stringify(formData));
         }, [formData]);
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        try{
+            const res = await fetch(URL+"/api/users", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify(formData)
+            });
+            if(!res.ok){
+                throw new Error("Failed to save profile");
+            }
+        } catch(err){
+            console.error(err);
+            return;
+        }
         console.log("Profile saved:", formData);
         navigate("/user/setup/board");
     }
