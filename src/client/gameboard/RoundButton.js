@@ -1,31 +1,66 @@
+// components/RoundButton.jsx
 import React from 'react';
+import { saveRoundData } from '../utils/gameStorage';
+import Player from './logic/gameLogic.js';
 
-
-export default function RoundButton({ player1, player2, onEndRound }) {
-    const handleEndRound = () => {
-        // Save round scores before calculating winner
-        player1.endRound();
-        player2.endRound();
-        
-        const difference = Math.abs(player1.roundPoints - player2.roundPoints);
-        
-        if (player1.roundPoints > player2.roundPoints) {
-            player1.totalPoints += difference;
-        } else if (player2.roundPoints > player1.roundPoints) {
-            player2.totalPoints += difference;
-        }
-        
-        // Notify parent to re-render
-        if (onEndRound) {
-            onEndRound();
-            console.log("Bag", player1.bags);
-            console.log("Bag", player2.bags);
-            player1.newRound();
-            player2.newRound();
-        }
+export default function RoundButton({ player1, player2, currentRound, onEndRound }) {
+  const handleEndRound = () => {
+    // Save round data to localStorage BEFORE any calculations (raw round points)
+    const roundData = {
+      roundNumber: currentRound,
+      player1RoundScore: player1.roundPoints,
+      player2RoundScore: player2.roundPoints,
+      player1TotalBefore: player1.totalPoints,
+      player2TotalBefore: player2.totalPoints,
+      timestamp: new Date().toISOString()
     };
+    
+    saveRoundData(roundData);
+    
+    // Create updated players as class instances
+    const updatedPlayer1 = new Player(player1.name);
+    updatedPlayer1.totalPoints = player1.totalPoints;
+    updatedPlayer1.roundScores = [...player1.roundScores];
+    updatedPlayer1.totalBagsIn = player1.totalBagsIn;
+    updatedPlayer1.totalBagsOn = player1.totalBagsOn;
+    
+    const updatedPlayer2 = new Player(player2.name);
+    updatedPlayer2.totalPoints = player2.totalPoints;
+    updatedPlayer2.roundScores = [...player2.roundScores];
+    updatedPlayer2.totalBagsIn = player2.totalBagsIn;
+    updatedPlayer2.totalBagsOn = player2.totalBagsOn;
+    
+    // Cornhole cancellation scoring logic
+    const difference = Math.abs(player1.roundPoints - player2.roundPoints);
+    let player1Net = 0;
+    let player2Net = 0;
+    
+    if (player1.roundPoints > player2.roundPoints) {
+      player1Net = difference;
+    } else if (player2.roundPoints > player1.roundPoints) {
+      player2Net = difference;
+    }
+    // If tie, both nets remain 0
+    
+    updatedPlayer1.totalPoints += player1Net;
+    updatedPlayer1.roundScores.push(player1Net);
+    
+    updatedPlayer2.totalPoints += player2Net;
+    updatedPlayer2.roundScores.push(player2Net);
+    
+    // Reset for next round
+    updatedPlayer1.roundPoints = 0;
+    updatedPlayer1.bags = 4;
+    updatedPlayer2.roundPoints = 0;
+    updatedPlayer2.bags = 4;
+    
+    // Notify parent with updated players
+    if (onEndRound) {
+      onEndRound(updatedPlayer1, updatedPlayer2);
+    }
+  };
 
-    return (
-        <button onClick={handleEndRound}>End Round</button>
-    );
+  return (
+    <button onClick={handleEndRound}>End Round</button>
+  );
 }

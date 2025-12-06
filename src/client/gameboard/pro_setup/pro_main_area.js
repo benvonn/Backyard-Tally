@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Player from "../logic/gameLogic";
 import RoundButton from '../RoundButton';
-import EndGameButton from '../../components/EndGame.tsx';
+import GameEndButton from '../../components/EndGame.tsx';
+import TouchButton from '../../components/TouchControls.jsx';
 
 export default function Pro_main_area() {
   const [users, setUsers] = useState([]);
@@ -9,43 +10,26 @@ export default function Pro_main_area() {
   const [selectedPlayer2, setSelectedPlayer2] = useState(null);
   const [player1, setPlayer1] = useState(null);
   const [player2, setPlayer2] = useState(null);
-  const [refresh, setRefresh] = useState(0);
   const [roundHistory, setRoundHistory] = useState([]);
   const [gameEnded, setGameEnded] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [currentRound, setCurrentRound] = useState(1);
-  const currentUser = localStorage.getItem("userProfile");
-  
-  const URL = 'https://localhost:7157';
 
   useEffect(() => {
-    // Fetch all users from backend
-    fetchUsers();
+    loadUsersFromCache();
     
-    // Set default value from localStorage when component mounts
+    const currentUser = localStorage.getItem("userProfile");
     if (currentUser) {
       const user = JSON.parse(currentUser);
       setSelectedPlayer1(user.name);
     }
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch(`${URL}/api/users`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.error("Failed to fetch users:", err);
+  const loadUsersFromCache = () => {
+    const cachedUsers = localStorage.getItem("allUsers");
+    if (cachedUsers) {
+      const parsedUsers = JSON.parse(cachedUsers);
+      setUsers(parsedUsers);
     }
   };
 
@@ -66,21 +50,12 @@ export default function Pro_main_area() {
     setGameEnded(false);
     setRoundHistory([]);
     setCurrentRound(1);
-    
   };
- 
-  const endGame = async () => {
-    if (gameEnded) return;
 
+  const handleGameEnd = () => {
     setGameEnded(true);
-
-    const winner = player1.totalPoints > player2.totalPoints ? player1.name : 
-                   player2.totalPoints > player1.totalPoints ? player2.name : "Tie";
-  
-
-
-    alert(`Game Over! Winner: ${winner}`);
   };
+
   const resetGame = () => {
     setPlayer1(null);
     setPlayer2(null);
@@ -92,30 +67,66 @@ export default function Pro_main_area() {
     setCurrentRound(1);
   };
   
-  const throwBag = (player, type) => {
-    player.throw(type);
-    setRefresh(prev => prev + 1);
+  const throwBagPlayer1 = (type) => {
+    if (gameEnded) {
+      alert("Game is over! Click 'New Game' to start again.");
+      return;
+    }
+    
+    setPlayer1(prevPlayer => {
+      if (!prevPlayer) return prevPlayer;
+      
+      const updatedPlayer = new Player(prevPlayer.name);
+      updatedPlayer.roundPoints = prevPlayer.roundPoints;
+      updatedPlayer.totalPoints = prevPlayer.totalPoints;
+      updatedPlayer.bags = prevPlayer.bags;
+      updatedPlayer.roundScores = [...prevPlayer.roundScores];
+      updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
+      updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
+      
+      const success = updatedPlayer.throw(type);
+      return success ? updatedPlayer : prevPlayer;
+    });
   };
 
-  const handleEndRound = () => {
-    const roundData = {
-      roundNumber: currentRound,
-      player1RoundPoints: player1.roundPoints,
-      player2RoundPoints: player2.roundPoints,
-      player1TotalPoints: player1.totalPoints,
-      player2TotalPoints: player2.totalPoints
-    };
-
-    setRoundHistory(prev => [...prev, roundData]);
-    setCurrentRound(prev => prev + 1)
-    setRefresh(prev => prev + 1);
+  const throwBagPlayer2 = (type) => {
+    if (gameEnded) {
+      alert("Game is over! Click 'New Game' to start again.");
+      return;
+    }
+    
+    setPlayer2(prevPlayer => {
+      if (!prevPlayer) return prevPlayer;
+      
+      const updatedPlayer = new Player(prevPlayer.name);
+      updatedPlayer.roundPoints = prevPlayer.roundPoints;
+      updatedPlayer.totalPoints = prevPlayer.totalPoints;
+      updatedPlayer.bags = prevPlayer.bags;
+      updatedPlayer.roundScores = [...prevPlayer.roundScores];
+      updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
+      updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
+      
+      const success = updatedPlayer.throw(type);
+      return success ? updatedPlayer : prevPlayer;
+    });
   };
 
-  // Show player selection screen if game hasn't started
+    const handleEndRound = (updatedPlayer1, updatedPlayer2) => {
+  setPlayer1(updatedPlayer1);
+  setPlayer2(updatedPlayer2);
+  setCurrentRound(prev => prev + 1);
+};
+
   if (!gameStarted) {
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
         <h2>Select Players</h2>
+        
+        {users.length === 0 && (
+          <p style={{ color: 'orange', marginBottom: '20px' }}>
+            ⚠️ No users available. Please visit home page to load users.
+          </p>
+        )}
         
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', marginBottom: '8px' }}>
@@ -167,14 +178,15 @@ export default function Pro_main_area() {
 
         <button
           onClick={startGame}
+          disabled={users.length === 0}
           style={{
             padding: '12px 24px',
             fontSize: '18px',
-            background: '#007bff',
+            background: users.length === 0 ? '#ccc' : '#007bff',
             color: 'white',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer'
+            cursor: users.length === 0 ? 'not-allowed' : 'pointer'
           }}
         >
           Start Game
@@ -200,9 +212,11 @@ export default function Pro_main_area() {
         >
           New Game
         </button>
+        
         <span style={{ marginLeft: '10px', fontWeight: 'bold' }}>
           Round: {currentRound}
         </span>
+        
         {gameEnded && (
           <span style={{ marginLeft: '10px', color: 'red', fontWeight: 'bold' }}>
             Game Over!
@@ -212,36 +226,98 @@ export default function Pro_main_area() {
       
       <section id="game-area">
         <div id="player_one">
-          <h3 id="player1-name">{player1.name}</h3>
-          <div onClick={() => throwBag(player1, "on")} className="cursor-pointer">+1</div>
-          <div onClick={() => throwBag(player1, "in")} className="cursor-pointer">+3</div>
-          <h1 id="player1-Round">{player1.roundPoints}</h1>
-          <h2 id="player1-Total">{player1.totalPoints}</h2>
-          <div onClick={() => throwBag(player1, "subtractOn")} className="cursor-pointer">-1</div>
-          <div onClick={() => throwBag(player1, "subtractIn")} className="cursor-pointer">-3</div>
-        </div>
-        
-        <div id="player_two">
-          <h3 id="player2-name">{player2.name}</h3>
-          <div onClick={() => throwBag(player2, "on")} className="cursor-pointer">+1</div>
-          <div onClick={() => throwBag(player2, "in")} className="cursor-pointer">+3</div>
-          <h1 id="player2-Round">{player2.roundPoints}</h1>
-          <h2 id="player2-Total">{player2.totalPoints}</h2>
-          <div onClick={() => throwBag(player2, "subtractOn")} className="cursor-pointer">-1</div>
-          <div onClick={() => throwBag(player2, "subtractIn")} className="cursor-pointer">-3</div>
+          {/* For player_one */}
+          <h3>{player1.name}</h3>
+
+          <TouchButton
+            onSingleTap={() => throwBagPlayer1("on")}
+            onDoubleTap={() => throwBagPlayer1("in")}
+            style={{ 
+              padding: '15px',
+              background: '#e3f2fd',
+              borderRadius: '8px',
+              margin: '8px 0',
+              textAlign: 'center',
+              fontSize: '18px'
+            }}
+          >
+            +1 / +3
+          </TouchButton>
+
+          <h1>Round: {player1.roundPoints}</h1>
+          <h2>Total: {player1.totalPoints}</h2>
+
+          <TouchButton
+            onSingleTap={() => throwBagPlayer1("subtractOn")}
+            onDoubleTap={() => throwBagPlayer1("subtractIn")}
+            style={{ 
+              padding: '15px',
+              background: '#ffebee',
+              borderRadius: '8px',
+              margin: '8px 0',
+              textAlign: 'center',
+              fontSize: '18px'
+            }}
+          >
+            -1 / -3
+          </TouchButton>
+
+          {/* Repeat the same display changes for player_two */}
+          <h3>{player2.name}</h3>
+
+          <TouchButton
+            onSingleTap={() => throwBagPlayer2("on")}
+            onDoubleTap={() => throwBagPlayer2("in")}
+            style={{ 
+              padding: '15px',
+              background: '#e3f2fd',
+              borderRadius: '8px',
+              margin: '8px 0',
+              textAlign: 'center',
+              fontSize: '18px'
+            }}
+          >
+            +1 / +3
+          </TouchButton>
+
+          <h1>Round: {player2.roundPoints}</h1>
+          <h2>Total: {player2.totalPoints}</h2>
+
+          <TouchButton
+            onSingleTap={() => throwBagPlayer2("subtractOn")}
+            onDoubleTap={() => throwBagPlayer2("subtractIn")}
+            style={{ 
+              padding: '15px',
+              background: '#ffebee',
+              borderRadius: '8px',
+              margin: '8px 0',
+              textAlign: 'center',
+              fontSize: '18px'
+            }}
+          >
+            -1 / -3
+          </TouchButton>
         </div>
       </section>
       
-      {!gameEnded && (
-  <>
-    <RoundButton 
-      player1={player1} 
-      player2={player2} 
-      onEndRound={handleEndRound}
-    />
-    <EndGameButton/>
-  </>
-)}
+      {!gameEnded && player1 && player2 && (
+        <>
+          <RoundButton 
+            player1={player1} 
+            player2={player2} 
+            currentRound={currentRound}
+            onEndRound={handleEndRound}
+          />
+          <GameEndButton 
+            player1={player1}
+            player2={player2}
+            currentRound={currentRound}
+            selectedBoard="pro"
+            roundHistory={roundHistory}
+            onGameEnd={handleGameEnd}
+          />
+        </>
+      )}
     </div>
   );
 }

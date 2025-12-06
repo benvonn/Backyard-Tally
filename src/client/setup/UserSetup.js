@@ -1,57 +1,93 @@
-import {react, useState, useEffect } from "react";
-import styled from "@emotion/styled";
+// UserSetup.jsx (or .tsx)
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUserMetadata, setUserMetadata } from "../utils/onboarding";
 
 export default function UserSetup() {
-
     const URL = 'https://localhost:7157';
-    const [formData, setFormData] = useState({
-        name: "",
-        passcode: ""
-    });
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value
-        }));
-    }
-    useEffect(() => {
-            localStorage.setItem("userProfile", JSON.stringify(formData));
-        }, [formData]);
+    const [name, setName] = useState("");
+    const [passcode, setPasscode] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try{
-            const res = await fetch(URL+"/api/users", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify(formData)
-            });
-            if(!res.ok){
-                throw new Error("Failed to save profile");
-            }
-        } catch(err){
-            console.error(err);
+        setError("");
+
+        if (!name.trim() || passcode.length < 4) {
+            setError("Name and a 4+ digit passcode are required.");
             return;
         }
-        console.log("Profile saved:", formData);
-        navigate("/user/setup/board");
-    }
-    const navigate = useNavigate();
+
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${URL}/api/users`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name.trim(), passcode, Board: "pro" })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.message || "Failed to create account.");
+            }
+                console.log("Signup response status:", res.status);
+                console.log("Signup response headers:", Object.fromEntries(res.headers.entries()));
+            // Do NOT save anything to localStorage
+            navigate("/user/profile"); // ← your existing UserProfile component
+        } catch (err) {
+            console.error("Signup error:", err);
+            setError(err.message || "An error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <>
-        <h1>User Profile</h1>
-        <form onSubmit={handleSubmit}>
-            <h2>Name:</h2>
-            <input type="text" required minLength={2} maxLength={24} name="name" value={formData.name} onChange={handleChange} placeholder="Enter a name" />
-            <h2>Passcode:</h2>
-            <input required minLength={4} maxLength={6} type="password" name="passcode" value={formData.passcode} onChange={handleChange} placeholder="Enter a passcode(4-6 digits" />
-            <p>Example: 1234</p>
-            <button type="submit">Save Profile</button>
-        </form>
-        </>
-    )
+        <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
+            <h1>Create Your Account</h1>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            
+            <form onSubmit={handleSubmit}>
+                <label>
+                    <h2>Name</h2>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g., Alex"
+                        required
+                        minLength={2}
+                        maxLength={24}
+                        style={{ width: '100%', padding: '8px' }}
+                    />
+                </label>
+
+                <label>
+                    <h2>Passcode</h2>
+                    <input
+                        type="password"
+                        value={passcode}
+                        onChange={(e) => setPasscode(e.target.value)}
+                        placeholder="4–6 digits"
+                        required
+                        minLength={4}
+                        maxLength={6}
+                        style={{ width: '100%', padding: '8px' }}
+                    />
+                    <p><small>Example: 1234</small></p>
+                </label>
+
+                <button 
+                    type="submit" 
+                    disabled={loading || !name.trim() || passcode.length < 4}
+                    style={{ padding: '10px 20px', fontSize: '16px' }}
+                >
+                    {loading ? "Creating..." : "Create Account"}
+                </button>
+            </form>
+        </div>
+    );
 }

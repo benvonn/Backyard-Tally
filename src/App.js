@@ -5,7 +5,6 @@ import LandingPage from './client/pages/LandingPage.js';
 import UserProfile from './client/user-profile/UserProfile.js';
 import UserSetup from './client/setup/UserSetup.js';
 import Home from './client/pages/Home.js';
-import { SetupConfirmation } from './client/setup/SetupConfirmation.js';
 import { ThemeContext } from './client/components/themes.tsx';
 import History from './client/history/History.js';
 import { AuthProvider } from './client/contexts/AuthContext.js';
@@ -44,19 +43,24 @@ function App({ toggleTheme, currentTheme }) {
       </button>
       <Hamburg />
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/user/setup/profile" element={<UserSetup />} />
-        <Route path="/user/profile" element={<ProtectedRoute>
-                                                <UserProfile />
-                                              </ProtectedRoute>} />
-        <Route path="/user/setup/confirmation" element={<SetupConfirmation />} />
-        <Route path="/home" element={<ProtectedRoute>
-                                      <Home />
-                                      </ProtectedRoute>} />
-        <Route path="/history" element={<ProtectedRoute>
-                                          <History/>
-                                        </ProtectedRoute>} />
-      </Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/user/setup/profile" element={<UserSetup />} />
+      
+      {/* ✅ REMOVE ProtectedRoute from UserProfile - it's the LOGIN page! */}
+      <Route path="/user/profile" element={<UserProfile />} />
+      
+      {/* ✅ Keep ProtectedRoute only for actual protected pages */}
+      <Route path="/home" element={
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      } />
+      <Route path="/history" element={
+        <ProtectedRoute>
+          <History/>
+        </ProtectedRoute>
+      } />
+    </Routes>
       </AuthProvider>
     </div>
   );

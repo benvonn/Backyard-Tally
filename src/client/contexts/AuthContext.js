@@ -1,4 +1,6 @@
+// AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import isValidOfflineToken from '../user-profile/ValidToken';
 
 const AuthContext = createContext();
 
@@ -10,41 +12,47 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is logged in on mount
+  // ✅ New: Check auth status (validates token)
+  const checkAuthStatus = () => {
     const userProfile = JSON.parse(localStorage.getItem("userProfile"));
-    if (userProfile) {
-      setUser(userProfile);
-    }
-    setLoading(false);
-  }, []);
+    const offlineToken = localStorage.getItem("offlineToken");
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("userProfile", JSON.stringify(userData));
+    if (userProfile && offlineToken && isValidOfflineToken(offlineToken)) {
+      return userProfile;
+    }
+    
+    // Clean up invalid session
+    localStorage.removeItem("userProfile");
+    localStorage.removeItem("offlineToken");
+    return null;
   };
 
+  // ✅ New: Login method that updates context AND localStorage
+  const login = (userData, token) => {
+    setUser(userData);
+    localStorage.setItem("userProfile", JSON.stringify(userData));
+    localStorage.setItem("offlineToken", token);
+  };
+
+  // ✅ New: Logout method
   const logout = () => {
     setUser(null);
     localStorage.removeItem("userProfile");
+    localStorage.removeItem("offlineToken");
   };
 
-  const updateUser = (updates) => {
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem("userProfile", JSON.stringify(updatedUser));
-  };
-
-  const isLoggedIn = () => {
-    return user !== null;
-  };
+  // Check auth on mount
+  useEffect(() => {
+    const user = checkAuthStatus();
+    setUser(user);
+    setLoading(false);
+  }, []);
 
   const value = {
     user,
     login,
     logout,
-    updateUser,
-    isLoggedIn,
+    isLoggedIn: () => user !== null,
     loading
   };
 
