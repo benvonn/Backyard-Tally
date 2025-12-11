@@ -2,6 +2,7 @@ import React from 'react';
 import { saveCompleteGame, getTempRoundData } from '../utils/gameStorage';
 
 interface Player {
+  id: number;
   name: string;
   totalPoints: number;
   roundPoints: number;
@@ -40,10 +41,12 @@ export default function EndGameButton({
       winner: player1.totalPoints > player2.totalPoints ? player1.name : 
               player2.totalPoints > player1.totalPoints ? player2.name : "Tie",
       player1: { 
+        id: player1.id,
         name: player1.name, 
         score: player1.totalPoints 
       },
       player2: { 
+        id: player2.id,
         name: player2.name, 
         score: player2.totalPoints 
       },

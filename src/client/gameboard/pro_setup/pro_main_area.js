@@ -21,7 +21,7 @@ export default function Pro_main_area() {
     const currentUser = localStorage.getItem("userProfile");
     if (currentUser) {
       const user = JSON.parse(currentUser);
-      setSelectedPlayer1(user.name);
+      setSelectedPlayer1(user.id);
     }
   }, []);
 
@@ -44,8 +44,26 @@ export default function Pro_main_area() {
       return;
     }
 
-    setPlayer1(new Player(selectedPlayer1));
-    setPlayer2(new Player(selectedPlayer2));
+    console.log('Selected ID1:', selectedPlayer1, 'ID2:', selectedPlayer2, 'Users:', users);
+
+    const user1 = users.find(u => u.id == selectedPlayer1);
+    const user2 = users.find(u => u.id == selectedPlayer2);
+
+    if (!user1 || !user2) {
+      alert("Selected users not found! Check console for details.");
+      console.error('User1 found:', user1, 'User2 found:', user2);
+      return;
+    }
+    console.log('user1.id type:', typeof user1.id, 'value:', user1.id);
+
+    if (typeof user1.id !== 'number' || typeof user2.id !== 'number') {
+      console.error('User IDs must be numbers!', { user1, user2 });
+      alert('Invalid user data. Please check your user storage.');
+      return;
+    }
+
+    setPlayer1(new Player(Number(user1.id), user1.name));
+    setPlayer2(new Player(Number(user2.id), user2.name));
     setGameStarted(true);
     setGameEnded(false);
     setRoundHistory([]);
@@ -67,55 +85,60 @@ export default function Pro_main_area() {
     setCurrentRound(1);
   };
   
-  const throwBagPlayer1 = (type) => {
-    if (gameEnded) {
-      alert("Game is over! Click 'New Game' to start again.");
-      return;
-    }
+const throwBagPlayer1 = (type) => {
+  if (gameEnded) {
+    alert("Game is over! Click 'New Game' to start again.");
+    return;
+  }
+  
+  setPlayer1(prevPlayer => {
+    if (!prevPlayer) return prevPlayer;
     
-    setPlayer1(prevPlayer => {
-      if (!prevPlayer) return prevPlayer;
-      
-      const updatedPlayer = new Player(prevPlayer.name);
-      updatedPlayer.roundPoints = prevPlayer.roundPoints;
-      updatedPlayer.totalPoints = prevPlayer.totalPoints;
-      updatedPlayer.bags = prevPlayer.bags;
-      updatedPlayer.roundScores = [...prevPlayer.roundScores];
-      updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
-      updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
-      
-      const success = updatedPlayer.throw(type);
-      return success ? updatedPlayer : prevPlayer;
-    });
-  };
-
-  const throwBagPlayer2 = (type) => {
-    if (gameEnded) {
-      alert("Game is over! Click 'New Game' to start again.");
-      return;
-    }
+    const updatedPlayer = new Player(prevPlayer.id, prevPlayer.name);
+    updatedPlayer.roundPoints = prevPlayer.roundPoints;
+    updatedPlayer.totalPoints = prevPlayer.totalPoints;
+    updatedPlayer.bags = prevPlayer.bags;
+    updatedPlayer.roundScores = [...prevPlayer.roundScores];
+    updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
+    updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
+    updatedPlayer.roundBagsIn = prevPlayer.roundBagsIn || 0;  // New copy
+    updatedPlayer.roundBagsOn = prevPlayer.roundBagsOn || 0;  // New copy
     
-    setPlayer2(prevPlayer => {
-      if (!prevPlayer) return prevPlayer;
-      
-      const updatedPlayer = new Player(prevPlayer.name);
-      updatedPlayer.roundPoints = prevPlayer.roundPoints;
-      updatedPlayer.totalPoints = prevPlayer.totalPoints;
-      updatedPlayer.bags = prevPlayer.bags;
-      updatedPlayer.roundScores = [...prevPlayer.roundScores];
-      updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
-      updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
-      
-      const success = updatedPlayer.throw(type);
-      return success ? updatedPlayer : prevPlayer;
-    });
-  };
-
-    const handleEndRound = (updatedPlayer1, updatedPlayer2) => {
-  setPlayer1(updatedPlayer1);
-  setPlayer2(updatedPlayer2);
-  setCurrentRound(prev => prev + 1);
+    const success = updatedPlayer.throw(type);
+    return success ? updatedPlayer : prevPlayer;
+  });
 };
+
+// Repeat the same for throwBagPlayer2
+const throwBagPlayer2 = (type) => {
+  if (gameEnded) {
+    alert("Game is over! Click 'New Game' to start again.");
+    return;
+  }
+  
+  setPlayer2(prevPlayer => {
+    if (!prevPlayer) return prevPlayer;
+    
+    const updatedPlayer = new Player(prevPlayer.id, prevPlayer.name);
+    updatedPlayer.roundPoints = prevPlayer.roundPoints;
+    updatedPlayer.totalPoints = prevPlayer.totalPoints;
+    updatedPlayer.bags = prevPlayer.bags;
+    updatedPlayer.roundScores = [...prevPlayer.roundScores];
+    updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
+    updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
+    updatedPlayer.roundBagsIn = prevPlayer.roundBagsIn || 0;  // New copy
+    updatedPlayer.roundBagsOn = prevPlayer.roundBagsOn || 0;  // New copy
+    
+    const success = updatedPlayer.throw(type);
+    return success ? updatedPlayer : prevPlayer;
+  });
+};
+
+  const handleEndRound = (updatedPlayer1, updatedPlayer2) => {
+    setPlayer1(updatedPlayer1);
+    setPlayer2(updatedPlayer2);
+    setCurrentRound(prev => prev + 1);
+  };
 
   if (!gameStarted) {
     return (
@@ -133,7 +156,7 @@ export default function Pro_main_area() {
             Player 1:
             <select
               value={selectedPlayer1 || ""}
-              onChange={(e) => setSelectedPlayer1(e.target.value)}
+              onChange={(e) => setSelectedPlayer1(Number(e.target.value))}
               style={{
                 display: 'block',
                 width: '200px',
@@ -144,7 +167,7 @@ export default function Pro_main_area() {
             >
               <option value="">-- Select Player 1 --</option>
               {users.map((user) => (
-                <option key={user.id} value={user.name}>
+                <option key={user.id} value={user.id}>
                   {user.name}
                 </option>
               ))}
@@ -157,7 +180,7 @@ export default function Pro_main_area() {
             Player 2:
             <select
               value={selectedPlayer2 || ""}
-              onChange={(e) => setSelectedPlayer2(e.target.value)}
+              onChange={(e) => setSelectedPlayer2(Number(e.target.value))}
               style={{
                 display: 'block',
                 width: '200px',
@@ -168,7 +191,7 @@ export default function Pro_main_area() {
             >
               <option value="">-- Select Player 2 --</option>
               {users.map((user) => (
-                <option key={user.id} value={user.name}>
+                <option key={user.id} value={user.id}>
                   {user.name}
                 </option>
               ))}

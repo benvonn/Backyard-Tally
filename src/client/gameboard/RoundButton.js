@@ -5,30 +5,41 @@ import Player from './logic/gameLogic.js';
 
 export default function RoundButton({ player1, player2, currentRound, onEndRound }) {
   const handleEndRound = () => {
-    // Save round data to localStorage BEFORE any calculations (raw round points)
+    console.log("P1 bags on:", player1.roundBagsOn, "bags in:", player1.roundBagsIn);  // Updated log for round
+    console.log("P2 bags on:", player2.roundBagsOn, "bags in:", player2.roundBagsIn);  // Updated log for round
+    
+    // Save round data to localStorage BEFORE any calculations (raw round points + bags)
     const roundData = {
       roundNumber: currentRound,
       player1RoundScore: player1.roundPoints,
       player2RoundScore: player2.roundPoints,
       player1TotalBefore: player1.totalPoints,
       player2TotalBefore: player2.totalPoints,
+      player1RoundBagsIn: player1.roundBagsIn || 0,
+      player1RoundBagsOn: player1.roundBagsOn || 0,
+      player2RoundBagsIn: player2.roundBagsIn || 0,
+      player2RoundBagsOn: player2.roundBagsOn || 0,
       timestamp: new Date().toISOString()
     };
     
     saveRoundData(roundData);
     
     // Create updated players as class instances
-    const updatedPlayer1 = new Player(player1.name);
+    const updatedPlayer1 = new Player(player1.id, player1.name);
     updatedPlayer1.totalPoints = player1.totalPoints;
     updatedPlayer1.roundScores = [...player1.roundScores];
     updatedPlayer1.totalBagsIn = player1.totalBagsIn;
     updatedPlayer1.totalBagsOn = player1.totalBagsOn;
-    
-    const updatedPlayer2 = new Player(player2.name);
+    updatedPlayer1.roundBagsIn = player1.roundBagsIn || 0;
+    updatedPlayer1.roundBagsOn = player1.roundBagsOn || 0;
+
+    const updatedPlayer2 = new Player(player2.id, player2.name);
     updatedPlayer2.totalPoints = player2.totalPoints;
     updatedPlayer2.roundScores = [...player2.roundScores];
     updatedPlayer2.totalBagsIn = player2.totalBagsIn;
     updatedPlayer2.totalBagsOn = player2.totalBagsOn;
+    updatedPlayer2.roundBagsIn = player2.roundBagsIn || 0;
+    updatedPlayer2.roundBagsOn = player2.roundBagsOn || 0;
     
     // Cornhole cancellation scoring logic
     const difference = Math.abs(player1.roundPoints - player2.roundPoints);
@@ -51,8 +62,12 @@ export default function RoundButton({ player1, player2, currentRound, onEndRound
     // Reset for next round
     updatedPlayer1.roundPoints = 0;
     updatedPlayer1.bags = 4;
+    updatedPlayer1.roundBagsIn = 0;  // New reset
+    updatedPlayer1.roundBagsOn = 0;  // New reset
     updatedPlayer2.roundPoints = 0;
     updatedPlayer2.bags = 4;
+    updatedPlayer2.roundBagsIn = 0;  // New reset
+    updatedPlayer2.roundBagsOn = 0;  // New reset
     
     // Notify parent with updated players
     if (onEndRound) {

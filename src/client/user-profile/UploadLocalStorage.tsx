@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-table";
 
 interface Player {
+  id: number;
   name: string;
   score: number;
 }
@@ -32,6 +33,7 @@ interface GameDataItem {
 
 export default function GameDataTable() {
   const [data, setData] = useState<GameDataItem[]>([]);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [rowSelection, setRowSelection] = useState({});
   const [error, setError] = useState("");
   const URL = "https://localhost:7157";
@@ -50,14 +52,40 @@ export default function GameDataTable() {
         setError("Error parsing game data from local storage.");
       }
     }
+
+    const userProfile = localStorage.getItem("userProfile");
+    if (userProfile) {
+      try {
+        const parsedUser = JSON.parse(userProfile);
+        setCurrentUser( parsedUser || null);
+      } catch (err) {
+        setError("Error parsing user profile from local storage.");
+      }
+    } else {
+      setError("No user profile found in local storage.");
+    }
   }, []);
 
+  const filteredData = useMemo(() => {
+    if (!currentUser) return [];
+    return data.filter(
+      (game) =>
+        game.player1.name === currentUser || game.player2.name === currentUser
+    );
+  }, [data, currentUser]);
+
   const handleUpload = async () => {
-    const currentData = localStorage.getItem("gameData");
-    if (!currentData) {
-      setError("No game data in local storage to upload.");
+    if (!currentUser) {
+      setError("No current user identified for upload.");
       return;
     }
+
+    if (filteredData.length === 0) {
+      setError("No game data associated with the current user to upload.");
+      return;
+    }
+
+    const jsonData = JSON.stringify(filteredData);
 
     try {
       const res = await fetch(`${URL}/api/Update/DB`, {
@@ -65,7 +93,7 @@ export default function GameDataTable() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ data: currentData }),
+        body: JSON.stringify({ data: jsonData }),
       });
 
       if (!res.ok) {
@@ -74,9 +102,9 @@ export default function GameDataTable() {
 
       const updatedData: GameDataItem[] = await res.json();
       const updatedString = JSON.stringify(updatedData);
+      // Update local storage with the returned data (assuming it's the uploaded subset)
       localStorage.setItem("gameData", updatedString);
-      setData(updatedData); // Update local state without reload for better UX.
-      // window.location.reload(); // Optional: Uncomment if you need a full reload.
+      setData(updatedData); // Update local state
     } catch (error) {
       console.error("Error uploading data:", error);
       setError("Failed to upload data to database.");
@@ -112,14 +140,24 @@ export default function GameDataTable() {
         header: "Board",
       },
       {
+        accessorFn: (row) => row.player1.id,
+        id: "player1Id",
+        header: "Player 1 ID",
+      },
+      {
         accessorFn: (row) => row.player1.name,
-        id: "player1Name",
+        name: "player1Name",
         header: "Player 1 Name",
       },
       {
         accessorFn: (row) => row.player1.score,
         id: "player1Score",
         header: "Player 1 Score",
+      },
+      {
+        accessorFn: (row) => row.player2.id,
+        id: "player2Id",
+        header: "Player 2 ID",
       },
       {
         accessorFn: (row) => row.player2.name,
@@ -153,7 +191,7 @@ export default function GameDataTable() {
   );
 
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     state: {
       rowSelection,
@@ -168,7 +206,7 @@ export default function GameDataTable() {
     <div>
       <h2>Game Data</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {data.length > 0 ? (
+      {filteredData.length > 0 ? (
         <table>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -199,7 +237,7 @@ export default function GameDataTable() {
           </tbody>
         </table>
       ) : (
-        <p>No game data available in local storage.</p>
+        <p>No game data available for the current user.</p>
       )}
       <button onClick={handleUpload}>Upload Local Storage to Database</button>
     </div>

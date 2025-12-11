@@ -4,7 +4,9 @@ export default function TouchButton({
   onSingleTap, 
   onDoubleTap,
   children,
-  style = {}
+  style = {},
+  bagIn,  // If unused, consider removing this prop
+  bagOn   // If unused, consider removing this prop
 }) {
   const buttonRef = useRef(null);
 
@@ -27,8 +29,10 @@ export default function TouchButton({
       if (touchDuration < 500 && touchStart !== null) {
         if (touchCount === 1) {
           onSingleTap?.();
+          // If needed, increment bagOn here, but prefer handling in Player.throw
         } else if (touchCount === 2) {
           onDoubleTap?.();
+          // If needed, increment bagIn here, but prefer handling in Player.throw
         }
       }
       

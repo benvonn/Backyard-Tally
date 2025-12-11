@@ -1,9 +1,12 @@
 export default class Player {
-    constructor(name) {
+    constructor(id, name) {
+        this.id = id;
         this.name = name;
         this.roundPoints = 0;
         this.totalPoints = 0;
         this.bags = 4;
+        this.roundBagsIn = 0;  // New: Per-round bags in
+        this.roundBagsOn = 0;  // New: Per-round bags on
         
         // Game stats
         this.roundScores = []; // Array to store each round's score
@@ -16,11 +19,13 @@ export default class Player {
             this.roundPoints = Math.max(0, this.roundPoints - 1);
             this.bags = Math.min(4, this.bags + 1);
             this.totalBagsOn = Math.max(0, this.totalBagsOn - 1);
+            this.roundBagsOn = Math.max(0, this.roundBagsOn - 1);  // New
             return true;
         } else if (type === "subtractIn") {
             this.roundPoints = Math.max(0, this.roundPoints - 3);
             this.bags = Math.min(4, this.bags + 1);
             this.totalBagsIn = Math.max(0, this.totalBagsIn - 1);
+            this.roundBagsIn = Math.max(0, this.roundBagsIn - 1);  // New
             return true;
         }
         
@@ -29,9 +34,11 @@ export default class Player {
             if (type === "in"){ 
                 this.roundPoints += 3;
                 this.totalBagsIn += 1;
+                this.roundBagsIn += 1;  // New
             } else if (type === "on"){
                 this.roundPoints += 1;
                 this.totalBagsOn += 1;
+                this.roundBagsOn += 1;  // New
             }
             return true;
         } else {
