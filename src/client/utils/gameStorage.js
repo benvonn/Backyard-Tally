@@ -31,10 +31,6 @@ export function getTempRoundData() {
   }
 }
 
-// Clear temporary round data (after uploading to DB)
-export function clearTempRoundData() {
-  localStorage.removeItem("tempRoundData");
-}
 
 // Save complete game (for EndGameButton)
 export function saveCompleteGame(gameData) {

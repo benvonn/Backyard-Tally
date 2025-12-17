@@ -57,8 +57,6 @@ export default function EndGameButton({
     saveCompleteGame(gameData);
     console.log("Game saved to localStorage:", gameData);
     
-    // Clear temp round data after game ends
-    localStorage.removeItem("tempRoundData");
     
     const winner = gameData.winner;
     alert(`Game Over! ${winner === "Tie" ? "It's a tie!" : `${winner} wins!`}\n${player1.name}: ${player1.totalPoints} - ${player2.name}: ${player2.totalPoints}`);

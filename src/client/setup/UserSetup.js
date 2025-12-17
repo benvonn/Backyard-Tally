@@ -47,6 +47,7 @@ export default function UserSetup() {
 
     return (
         <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
+            <PackageReference Include="Microsoft.Identity.Web" Version="3.8.2" />
             <h1>Create Your Account</h1>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             

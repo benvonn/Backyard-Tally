@@ -5,9 +5,10 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
+import gameDataManager from "../utils/Manager";
 
 interface Player {
-  id: number;
+  id: number | string; // Allow both string and number for ID
   name: string;
   score: number;
 }
@@ -18,7 +19,6 @@ interface Round {
   player2RoundScore: number;
   player1TotalBefore: number;
   player2TotalBefore: number;
-  // Add more round fields if needed.
 }
 
 interface GameDataItem {
@@ -35,11 +35,13 @@ export default function GameDataTable() {
   const [data, setData] = useState<GameDataItem[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [rowSelection, setRowSelection] = useState({});
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
+  const [showAllGames, setShowAllGames] = useState(false); // New state for filter toggle
   const URL = "https://localhost:7157";
 
   useEffect(() => {
-    const storedData = localStorage.getItem("gameData");
+    // Load games from localStorage
+    const storedData = localStorage.getItem("gameHistory");
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
@@ -57,7 +59,10 @@ export default function GameDataTable() {
     if (userProfile) {
       try {
         const parsedUser = JSON.parse(userProfile);
-        setCurrentUser( parsedUser || null);
+        console.log("User profile:", parsedUser); // Debug log
+        
+        // Set currentUser to just the name
+        setCurrentUser(parsedUser.name || null);
       } catch (err) {
         setError("Error parsing user profile from local storage.");
       }
@@ -67,12 +72,28 @@ export default function GameDataTable() {
   }, []);
 
   const filteredData = useMemo(() => {
+    if (showAllGames) {
+      // Show all games if toggle is on
+      return data;
+    }
+    
+    // Otherwise, filter for current user
     if (!currentUser) return [];
+    
+    console.log("Current user:", currentUser); // Debug log
+    console.log("Games:", data); // Debug log
+    
     return data.filter(
-      (game) =>
-        game.player1.name === currentUser || game.player2.name === currentUser
+      (game) => {
+        const player1Matches = game.player1.name === currentUser;
+        const player2Matches = game.player2.name === currentUser;
+        
+        console.log(`Game ${game.date}: player1=${game.player1.name}, player2=${game.player2.name}, matches=${player1Matches || player2Matches}`);
+        
+        return player1Matches || player2Matches;
+      }
     );
-  }, [data, currentUser]);
+  }, [data, currentUser, showAllGames]);
 
   const handleUpload = async () => {
     if (!currentUser) {
@@ -80,31 +101,31 @@ export default function GameDataTable() {
       return;
     }
 
-    if (filteredData.length === 0) {
+    // Only allow upload of user's games
+    const userGames = data.filter(
+      (game) => game.player1.name === currentUser || game.player2.name === currentUser
+    );
+    
+    if (userGames.length === 0) {
       setError("No game data associated with the current user to upload.");
       return;
     }
 
-    const jsonData = JSON.stringify(filteredData);
-
     try {
-      const res = await fetch(`${URL}/api/Update/DB`, {
+      const res = await fetch(`${URL}/api/GameData/Update/DB`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: jsonData }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: userGames })
       });
-
+      console.log(userGames);
       if (!res.ok) {
         throw new Error(`Upload failed with status ${res.status}`);
       }
 
-      const updatedData: GameDataItem[] = await res.json();
-      const updatedString = JSON.stringify(updatedData);
-      // Update local storage with the returned data (assuming it's the uploaded subset)
-      localStorage.setItem("gameData", updatedString);
-      setData(updatedData); // Update local state
+      // On successful upload, mark as uploaded
+      gameDataManager.markAsUploaded();
+      
+      alert("Games uploaded successfully!");
     } catch (error) {
       console.error("Error uploading data:", error);
       setError("Failed to upload data to database.");
@@ -133,16 +154,11 @@ export default function GameDataTable() {
       {
         accessorKey: "date",
         header: "Date",
-        cell: ({ getValue }) => new Date(getValue<string>()).toLocaleString(), // Format date for display.
+        cell: ({ getValue }) => new Date(getValue<string>()).toLocaleString(),
       },
       {
         accessorKey: "board",
         header: "Board",
-      },
-      {
-        accessorFn: (row) => row.player1.id,
-        id: "player1Id",
-        header: "Player 1 ID",
       },
       {
         accessorFn: (row) => row.player1.name,
@@ -153,11 +169,6 @@ export default function GameDataTable() {
         accessorFn: (row) => row.player1.score,
         id: "player1Score",
         header: "Player 1 Score",
-      },
-      {
-        accessorFn: (row) => row.player2.id,
-        id: "player2Id",
-        header: "Player 2 ID",
       },
       {
         accessorFn: (row) => row.player2.name,
@@ -177,15 +188,15 @@ export default function GameDataTable() {
         accessorKey: "winner",
         header: "Winner",
       },
-      {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <button onClick={() => console.log("Dropdown action for game:", row.original)}>
-            ▼
-          </button>
-        ), // Placeholder for dropdown features. Implement onClick logic later, e.g., to show rounds details.
-      },
+      // {
+      //   id: "actions",
+      //   header: "Actions",
+      //   cell: ({ row }) => (
+      //     <button onClick={() => console.log("Dropdown action for game:", row.original)}>
+      //       ▼
+      //     </button>
+      //   ),
+      // },
     ],
     []
   );
@@ -198,14 +209,29 @@ export default function GameDataTable() {
     },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    enableRowSelection: true, // Enable row selection.
-    getRowId: (row) => row.date, // Use date as unique row ID since it's likely unique.
+    enableRowSelection: true,
+    getRowId: (row: GameDataItem) => row.date, // Add explicit type
   });
 
   return (
     <div>
       <h2>Game Data</h2>
+      
+      {/* Filter Toggle Button */}
+      <div style={{ marginBottom: '10px' }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={showAllGames}
+            onChange={() => setShowAllGames(!showAllGames)}
+            style={{ marginRight: '5px' }}
+          />
+          Show All Games
+        </label>
+      </div>
+      
       {error && <p style={{ color: "red" }}>{error}</p>}
+      
       {filteredData.length > 0 ? (
         <table>
           <thead>
@@ -237,9 +263,17 @@ export default function GameDataTable() {
           </tbody>
         </table>
       ) : (
-        <p>No game data available for the current user.</p>
+        <p>No game data available {showAllGames ? "in storage" : `for ${currentUser || "the current user"}`}.</p>
       )}
-      <button onClick={handleUpload}>Upload Local Storage to Database</button>
+      
+      <button 
+        onClick={handleUpload}
+        disabled={showAllGames ? !data.filter(
+          (game) => game.player1.name === currentUser || game.player2.name === currentUser
+        ).length : !filteredData.length}
+      >
+        Upload {showAllGames ? "My Games" : "Local Storage to Database"}
+      </button>
     </div>
   );
 }

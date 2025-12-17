@@ -71,28 +71,7 @@ export default function UserProfile() {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch(`${URL}/api/users`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
-      setUsers(data);
-      localStorage.setItem("allUsers", JSON.stringify(data));
-      console.log("Users fetched and cached:", data);
-    } catch (err) {
-      console.error("Failed to fetch users (using cached data):", err);
-      if (users.length === 0) {
-        console.log("No cached users available");
-      }
-    }
-  };
 
   const handleUserSelect = (user) => {
     setSelectedUser(user);
