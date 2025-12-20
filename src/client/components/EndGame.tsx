@@ -75,7 +75,7 @@ export default function EndGameButton({
     <button 
       onClick={handleGameEnd}
       style={{
-        padding: '12px 24px',
+        padding: '12px 20px',
         fontSize: '16px',
         background: '#28a745',
         color: 'white',

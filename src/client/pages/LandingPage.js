@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 import UserSetup from "../setup/UserSetup.js";
 import LoadingScreen from "../utils/LoadingScreen.tsx"; // Adjust path if necessary
 import { useAuth } from "../contexts/AuthContext"; // Example: if you have an auth context to check login state
-import { useNavigate } from "react-router-dom";
 
 export default function LandingPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate()
     // const navigate = useNavigate(); // Not needed here if LoadingScreen handles navigation
     // const [isLoading, setIsLoading] = useState(false); // Removed: LoadingScreen handles its own state/logic
 

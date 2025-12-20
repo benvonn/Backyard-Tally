@@ -5,7 +5,7 @@ export default function Hamburg() {
     const [isOpened, setIsOpened] = React.useState(false);
     const navigate = useNavigate();
     return(
-        <div>
+        <div style={{paddingBottom: '10px'}}>
             <button onClick={() => {setIsOpened(!isOpened)}}>☰</button>
         {isOpened &&
         <Modal onClose={() => {setIsOpened(false)}}>

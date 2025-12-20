@@ -13,6 +13,8 @@
   }
 }
 
+
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -26,6 +28,18 @@
 
 .App-link {
   color: #61dafb;
+}
+@font-face {
+  font-family: 'DigitTech7';
+  /* Ensure the path accurately points to your font file */
+  src: url('./client/components/Icons/fonts/DigitTech7-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+
+  font-family: 'DigitTech16';
+  src: url('./client/components/Icons/fonts/DigitTech16-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @keyframes App-logo-spin {

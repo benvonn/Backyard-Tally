@@ -56,7 +56,6 @@ export default function UserProfile() {
 
     // Load users
     loadUsersFromCache();
-    fetchUsers();
   };
 
   checkOfflineLogin();
