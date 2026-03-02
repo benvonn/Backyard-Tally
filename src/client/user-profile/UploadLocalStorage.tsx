@@ -184,7 +184,7 @@ export default function GameDataTable() {
   const [error, setError] = useState<string>("");
   const [showAllGames, setShowAllGames] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const URL = "https://witty-moss-0d46e7810.6.azurestaticapps.net";
+  const URL = "byt-fe.onrender.com";
 
   useEffect(() => {
     const storedData = localStorage.getItem("gameHistory");

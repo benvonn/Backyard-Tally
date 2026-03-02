@@ -8,7 +8,7 @@ import GameDataTable from "./UploadLocalStorage.tsx";
 import Navbar from 'react-bootstrap/Navbar';
 import styled from "@emotion/styled";
 
-const URL = "bytbe.azurewebsites.net"; 
+const URL = "byt-fe.onrender.com"; 
 const USERS_URL = `${URL}/api/users`;
 const LOGIN_URL = `${URL}/api/users/login`;
 

@@ -1,7 +1,7 @@
 // LoadingScreen.tsx
 import React, { useState, useEffect, useRef } from "react";
 
-const URL = "bytbe.azurewebsites.net";
+const URL = "byt-fe.onrender.com";
 const HEALTH_CHECK_URL = `${URL}/api/health`;
 const USERS_URL = `${URL}/api/users`;
 const POLLING_INTERVAL = 2000;
