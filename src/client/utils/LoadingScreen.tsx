@@ -1,9 +1,9 @@
 // LoadingScreen.tsx
 import React, { useState, useEffect, useRef } from "react";
 
-const URL = "byt-fe.onrender.com";
-const HEALTH_CHECK_URL = `${URL}/api/health`;
-const USERS_URL = `${URL}/api/users`;
+const URL = "";
+const HEALTH_CHECK_URL = `/api/health`;
+const USERS_URL = `/api/users`;
 const POLLING_INTERVAL = 2000;
 const TIMEOUT_DURATION = 30000;
 

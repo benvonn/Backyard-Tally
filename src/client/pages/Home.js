@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Pro_Main_Area from "../gameboard/pro_setup/pro_main_area.js";
 
-const URL = "byt-fe.onrender.com"; 
-const USERS_URL = `${URL}/api/users`;
+const URL = ""; 
+const USERS_URL = `/api/users`;
 
 export default function Home() {
     const [selectedBoard, setSelectedBoard] = useState(null);

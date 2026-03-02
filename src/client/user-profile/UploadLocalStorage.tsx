@@ -184,7 +184,7 @@ export default function GameDataTable() {
   const [error, setError] = useState<string>("");
   const [showAllGames, setShowAllGames] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const URL = "byt-fe.onrender.com";
+  const URL = "";
 
   useEffect(() => {
     const storedData = localStorage.getItem("gameHistory");

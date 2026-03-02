@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getUserMetadata, setUserMetadata } from "../utils/onboarding";
 
 export default function UserSetup({ onComplete }) { 
-    const URL = 'byt-fe.onrender.com';
+    const URL = '';
     const [name, setName] = useState("");
     const [passcode, setPasscode] = useState("");
     const [error, setError] = useState("");
