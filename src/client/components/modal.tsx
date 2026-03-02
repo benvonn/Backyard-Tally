@@ -1,6 +1,5 @@
 // modal.tsx (or wherever your Modal component is defined)
 import styled from "@emotion/styled";
-import {ReactComponent as CloseIcon} from "../components/Icons/closeCircle.svg";
 import { ReactNode, MouseEvent as ReactMouseEvent } from "react"; // Import ReactNode and ReactMouseEvent
 
 
@@ -28,7 +27,7 @@ export default function Modal({
           aria-label="Close modal"
           role="button"
           tabIndex={0}
-        />
+        >X</SCloseButton>
       </SContainer>
       
     </SModal>
@@ -36,7 +35,7 @@ export default function Modal({
 }
 
 // ... (your existing styles remain the same)
-const SCloseButton = styled(CloseIcon)`
+const SCloseButton = styled.button`
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
@@ -44,16 +43,28 @@ const SCloseButton = styled(CloseIcon)`
   height: 25px;
   cursor: pointer;
   z-index: 10;
+  
   transition: transform 0.1s ease-in-out;
-  color: white; 
+  background: #000000ff;
+  color: #0f0;
+  border: 2.5px solid #0f0;
+  font-family: VT323;
+  font-size: 15px;
+  transition: all 0.2s ease;
   pointer-events: auto;
   
   &:hover {
-    transform: scale(1.1);
+    background: #0f0;
+    color: #000;
+    border-color: #000;
   }
   
   &:active {
-    transform: scale(1);
+    transform: scale(0.98);
+  }
+      &:focus {
+    outline: 2px solid #1aff00;
+    outline-offset: 2px;
   }
 `;
 

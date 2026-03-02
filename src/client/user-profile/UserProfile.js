@@ -267,21 +267,23 @@ export default function UserProfile() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
+          background: 'rgba(0,0,0,0.85)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            background: 'white',
+            background: '#000000ff',
             padding: '24px',
-            borderRadius: '8px',
+            border: '5px solid #0f0',
             minWidth: '300px',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+            color: '#0f0',
+            fontFamily: 'VT323'
           }}>
-            <h3>Login as {selectedUser?.name}</h3>
-            <label style={{ display: 'block', marginBottom: '8px' }}>
+            <h3 style={{color: '#0f0'}}>Login as {selectedUser?.name}</h3>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#0f0' }}>
               Enter Passcode:
               <input
                 type="password"
@@ -293,15 +295,17 @@ export default function UserProfile() {
                   width: '100%',
                   padding: '8px',
                   marginTop: '4px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px'
+                  background: '#000000ff',
+                  border: '2.5px solid #0f0',
+                  color: '#0f0',
+                  fontFamily: 'VT323'
                 }}
                 disabled={loading}
                 autoFocus
               />
             </label>
             {loginError && (
-              <p style={{ color: 'red', fontSize: '14px' }}>{loginError}</p>
+              <p style={{ color: '#f00', fontSize: '14px' }}>{loginError}</p>
             )}
             <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
               <button 
@@ -310,10 +314,10 @@ export default function UserProfile() {
                 style={{
                   flex: 1,
                   padding: '8px 16px',
-                  background: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
+                  background: '#000000ff',
+                  color: '#0f0',
+                  border: '2.5px solid #0f0',
+                  fontFamily: 'VT323',
                   cursor: loading ? 'not-allowed' : 'pointer'
                 }}
               >
@@ -325,10 +329,10 @@ export default function UserProfile() {
                 style={{
                   flex: 1,
                   padding: '8px 16px',
-                  background: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
+                  background: '#000000ff',
+                  color: '#f00',
+                  border: '2.5px solid #f00',
+                  fontFamily: 'VT323',
                   cursor: 'pointer'
                 }}
               >

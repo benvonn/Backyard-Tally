@@ -83,10 +83,18 @@ const StyledLabel = styled.label`
 `;
 
 const StyledCheckbox = styled.input`
-  accent-color: #0f0;
+  appearance: none;
+  background-color: #000000ff;
   width: 20px;
   height: 20px;
   cursor: pointer;
+  border: 2.5px solid #0f0;
+
+  &:checked {
+  background-color: #0f0
+  }
+
+
 `;
 
 const ErrorP = styled.p`
