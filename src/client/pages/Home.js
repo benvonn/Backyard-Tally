@@ -44,8 +44,7 @@ export default function Home() {
     
     return (
         <div>
-            {selectedBoard === "pro" && <Pro_Main_Area />}
-            {!selectedBoard && <p>No board selected. Please complete setup.</p>}
+            <Pro_Main_Area />
         </div>
     );
 }

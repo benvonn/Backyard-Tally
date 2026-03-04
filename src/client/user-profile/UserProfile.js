@@ -21,8 +21,6 @@ const LogoutButtonStyle = styled.button`
   cursor: pointer;
   width: 18%;
   text-align: center;
-  justify-content: start;
-  align-items: start;
   transition: all 0.2s ease;
 
   &:hover {
@@ -34,57 +32,6 @@ const LogoutButtonStyle = styled.button`
   &:active {
     transform: scale(0.98);
   }
-
-  &:focus {
-    outline: 2px solid #ff1a00;
-    outline-offset: 2px;
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  width: 25px;
-  height: 25px;
-  cursor: pointer;
-  z-index: 10;
-  background: #000000ff;
-  color: #0f0;
-  border: 2.5px solid #0f0;
-  font-family: VT323;
-  font-size: 15px;
-  transition: all 0.2s ease;
-  pointer-events: auto;
-
-  &:hover {
-    background: #0f0;
-    color: #000;
-    border-color: #000;
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &:focus {
-    outline: 2px solid #1aff00;
-    outline-offset: 2px;
-  }
-`;
-
-const SectionContainer = styled.div`
-  position: relative;
-  background-color: #000000ff;
-  min-width: 350px;
-  font-family: VT323;
-  padding: 1.9rem;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  border: 5px solid #0f0;
-  margin-top: 1rem;
 `;
 
 export default function UserProfile() {
@@ -96,7 +43,7 @@ export default function UserProfile() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showTour, setShowTour] = useState(false);
-  const [activePanel, setActivePanel] = useState(null); // "dropdown" | "gamedata" | null
+  const [activePanel, setActivePanel] = useState(null);
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -155,6 +102,9 @@ export default function UserProfile() {
       setUsers(JSON.parse(cachedUsers));
     }
   };
+  const togglePanel = (panel) => {
+    setActivePanel((prev) => (prev === panel ? null : panel));
+  }
 
   const handleUserSelect = (user) => {
     setSelectedUser(user);
@@ -205,7 +155,6 @@ export default function UserProfile() {
 
       setProfile(userProfile);
       setShowLoginModal(false);
-      setActivePanel(null);
 
       const meta = getUserMetadata(data.id);
       if (!meta.hasCompletedInitialLogin) {
@@ -229,7 +178,6 @@ export default function UserProfile() {
     localStorage.removeItem("userProfile");
     localStorage.removeItem("offlineToken");
     setProfile(null);
-    setActivePanel(null);
   };
 
   const closeLoginModal = () => {
@@ -237,10 +185,6 @@ export default function UserProfile() {
     setPasscodeInput("");
     setLoginError("");
     setSelectedUser(null);
-  };
-
-  const togglePanel = (panel) => {
-    setActivePanel((prev) => (prev === panel ? null : panel));
   };
 
   return (
@@ -273,75 +217,26 @@ export default function UserProfile() {
 
       {profile ? (
         <div>
-          <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
-            <button
-              onClick={() => togglePanel("dropdown")}
-              style={{
-                background: "#000",
-                color: "#0f0",
-                border: "2.5px solid #0f0",
-                fontFamily: "VT323",
-                fontSize: "18px",
-                padding: "4px 12px",
-                cursor: "pointer",
-              }}
-            >
-              {activePanel === "dropdown" ? "▲ Users" : "▼ Users"}
-            </button>
-            <LogoutButtonStyle onClick={handleLogout}>Logout</LogoutButtonStyle>
-          </div>
-
-          {activePanel === "dropdown" && (
-            <SectionContainer>
-              <CloseButton onClick={() => setActivePanel(null)} aria-label="Close">X</CloseButton>
-              <UserDropdown
-                users={users}
-                currentUserName={profile.name}
-                currentUserId={profile.id}
-                onUserSelect={handleUserSelect}
-                onLogout={handleLogout}
-              />
-            </SectionContainer>
-          )}
-
-    
+          <UserDropdown
+            users={users}
+            currentUserName={profile.name}
+            currentUserId={profile.id}
+            onUserSelect={handleUserSelect}
+            onLogout={handleLogout}
+          />
+          <LogoutButtonStyle onClick={handleLogout}>Logout</LogoutButtonStyle>
         </div>
       ) : (
         <div>
           <p>No user logged in.</p>
-          <button
-            onClick={() => togglePanel("dropdown")}
-            style={{
-              background: "#000",
-              color: "#0f0",
-              border: "2.5px solid #0f0",
-              fontFamily: "VT323",
-              fontSize: "18px",
-              padding: "4px 12px",
-              cursor: "pointer",
-              marginBottom: "8px",
-            }}
-          >
-            {activePanel === "dropdown" ? "▲ Select User" : "▼ Select User"}
-          </button>
-
-          {activePanel === "dropdown" && (
-            <SectionContainer>
-              <CloseButton onClick={() => setActivePanel(null)} aria-label="Close">X</CloseButton>
-              {users.length > 0 ? (
-                <UserDropdown
-                  users={users}
-                  currentUserName="Guest"
-                  onUserSelect={handleUserSelect}
-                  onLogout={() => {}}
-                />
-              ) : (
-                <p style={{ color: "orange", marginTop: "10px" }}>
-                  Loading users...
-                </p>
-              )}
-            </SectionContainer>
-          )}
+          <UserDropdown
+            users={users}
+            currentUserName="Guest"
+            onUserSelect={handleUserSelect}
+            isOpen={activePanel === "dropdown"}
+            onToggle={() => togglePanel("dropdown")}
+            onLogout={() => {}}
+          />
         </div>
       )}
 
@@ -372,7 +267,23 @@ export default function UserProfile() {
               position: "relative",
             }}
           >
-            <CloseButton onClick={closeLoginModal} aria-label="Close modal">X</CloseButton>
+            <button
+              onClick={closeLoginModal}
+              style={{
+                position: "absolute",
+                top: "0.5rem",
+                right: "0.5rem",
+                width: "25px",
+                height: "25px",
+                background: "#000000ff",
+                color: "#0f0",
+                border: "2.5px solid #0f0",
+                fontFamily: "VT323",
+                cursor: "pointer",
+              }}
+            >
+              X
+            </button>
             <h3 style={{ color: "#0f0" }}>Login as {selectedUser?.name}</h3>
             <label style={{ display: "block", marginBottom: "8px", color: "#0f0" }}>
               Enter Passcode:
@@ -433,11 +344,12 @@ export default function UserProfile() {
           </div>
         </div>
       )}
-      {activePanel !== "dropdown" && (
-        <div id="dataUpload">
-          <GameDataTable />
-        </div>
-      )}
+    {activePanel !== 'dropdown' && (
+      <div id="dataUpload">
+        <GameDataTable isOpen={activePanel === "gamedata"}
+        onToggle={() => togglePanel("gamedata")} />
+      </div>
+    )}
     </div>
   );
 }

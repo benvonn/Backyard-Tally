@@ -26,6 +26,11 @@ interface GameDataItem {
   rounds: Round[];
 }
 
+interface GameDataTableProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
 const ToggleButton = styled.button`
   background: #0f0;
   border: solid 2.5px #0f0;
@@ -177,13 +182,12 @@ const StyledUploadButton = styled.button`
   }
 `;
 
-export default function GameDataTable() {
+export default function GameDataTable({ isOpen, onToggle }: GameDataTableProps) {
   const [data, setData] = useState<GameDataItem[]>([]);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string>("");
   const [showAllGames, setShowAllGames] = useState(false);
-  const [showContent, setShowContent] = useState(false);
   const URL = "";
 
   useEffect(() => {
@@ -302,14 +306,12 @@ export default function GameDataTable() {
       justifyContent: 'center', 
       width: '100%' 
     }}>
-      <ToggleButton 
-        onClick={() => setShowContent(!showContent)}
-      >
+      <ToggleButton onClick={onToggle}>
         <ToggleText>Game Data</ToggleText>
         <ToggleArrow>▼</ToggleArrow>
       </ToggleButton>
       
-      {showContent && (
+      {isOpen && (
         <ContentContainer>
           <StyledH2>Game Data</StyledH2>
           

@@ -12,36 +12,29 @@ interface UserDropdownProps {
   currentUserId?: number | null;
   onUserSelect: (user: User) => void;
   onLogout: () => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }
+
 const DropdownContainer = styled.div`
   position: absolute;
-  background: #000000ff;
+  background: rgb(0, 0, 0);
   border: 5px solid #0f0;
   padding: 8px;
-  margin-top: 4px; /* This pushes it down from the toggle button */
+  margin-top: 4px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   z-index: 1000;
   min-width: 200px;
   max-height: 300px;
   overflow-y: auto;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   &::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari, Opera */
+    display: none;
   }
-  
-  /* Position it below the toggle button */
-  top: 100%; /* Position at bottom of parent */
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
-`;
-
-const SwitchUserText = styled.div`
-  font-size: 12px;
-  color: #666;
-  padding: 4px 16px;
-  margin-bottom: 4px;
-  font-family: VT323;
 `;
 
 const StyledUserButton = styled.button<{ isCurrent: boolean }>`
@@ -49,7 +42,7 @@ const StyledUserButton = styled.button<{ isCurrent: boolean }>`
   border: 2.5px solid #0f0;
   color: ${({ isCurrent }) => (isCurrent ? '#000000ff' : '#0f0')};
   font-family: VT323;
-  font-size: 20px; // Slightly smaller than 25px for dropdown
+  font-size: 20px;
   padding: 0.5rem 1rem;
   cursor: pointer;
   width: 100%;
@@ -73,25 +66,28 @@ const StyledUserButton = styled.button<{ isCurrent: boolean }>`
   }
 `;
 
-
+/* Green toggle button — matches Game Data dropdown exactly */
 const ToggleButton = styled.button`
-  background: transparent;
-  border: none;
-  color: #0f0;
-  text-decoration: underline;
+  background: #0f0;
+  border: solid 2.5px #0f0;
+  color: #000000ff;
   cursor: pointer;
   padding: 0;
   font-family: VT323;
   font-size: 20px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  text-align: left;
+  width: 30vw;
 `;
 
-const Hr = styled.hr`
-  margin: 8px 0;
-  border: none;
-  border-top: 1px solid #0f0;
+const ToggleText = styled.span`
+  padding-left: 12px;
+`;
+
+const ToggleArrow = styled.span`
+  padding-right: 12px;
 `;
 
 export default function UserDropdown({ 
@@ -99,19 +95,20 @@ export default function UserDropdown({
   currentUserName, 
   currentUserId,
   onUserSelect, 
-  onLogout 
+  onLogout,
+  isOpen,
+  onToggle
 }: UserDropdownProps) {
-  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest("#user-dropdown") && !target.closest("#user-dropdown-toggle")) {
-        setShowDropdown(false);
+        if (isOpen) onToggle();
       }
     };
 
-    if (showDropdown) {
+    if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
     }
@@ -120,40 +117,29 @@ export default function UserDropdown({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [showDropdown]);
+  }, [isOpen]);
 
   return (
-    <div style={{ 
-      position: 'relative', 
-      display: 'flex', 
-      justifyContent: 'center', 
-      width: '100%' 
-    }}>
-      <ToggleButton 
-        id="user-dropdown-toggle"
-        onClick={() => setShowDropdown(!showDropdown)}
-      >
-        Welcome, {currentUserName} ▼
+    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <ToggleButton id="user-dropdown-toggle" onClick={onToggle}>
+        <ToggleText>Welcome, {currentUserName}</ToggleText>
+        <ToggleArrow>▼</ToggleArrow>
       </ToggleButton>
       
-      {showDropdown && (
+      {isOpen && (
         <DropdownContainer id="user-dropdown">
-          
           {users.map((user) => (
             <StyledUserButton
               key={user.id}
               isCurrent={user.id === currentUserId}
               onClick={() => {
                 onUserSelect(user);
-                setShowDropdown(false);
+                onToggle();
               }}
             >
               {user.name}
             </StyledUserButton>
           ))}
-          
-          
-
         </DropdownContainer>
       )}
     </div>
