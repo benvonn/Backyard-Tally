@@ -4,7 +4,6 @@ import styled from "@emotion/styled";
 interface User {
   id: number;
   name: string;
-  board?: string;
 }
 
 interface UserDropdownProps {

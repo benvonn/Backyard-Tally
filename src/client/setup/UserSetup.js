@@ -25,7 +25,7 @@ export default function UserSetup({ onComplete }) {
             const res = await fetch(`${URL}/api/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: name.trim(), passcode, Board: "pro" })
+                body: JSON.stringify({ name: name.trim(), passcode})
             });
 
             if (!res.ok) {
