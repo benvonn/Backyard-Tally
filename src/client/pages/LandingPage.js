@@ -3,7 +3,7 @@ import Modal from "../components/modal.tsx";
 import { useNavigate } from "react-router-dom";
 import UserSetup from "../setup/UserSetup.js"; 
 import LoadingScreen from "../utils/LoadingScreen.tsx"; 
-import isValidOfflineToken from "./ValidToken.js";   // ← added
+import isValidOfflineToken from "../user-profile/ValidToken.js";   // ← added
 import styled from "@emotion/styled";
 
 const StyledButton = styled.button`
