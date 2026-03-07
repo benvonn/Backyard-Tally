@@ -59,8 +59,6 @@ export default function EndGameButton({
     
     
     const winner = gameData.winner;
-    alert(`Game Over! ${winner === "Tie" ? "It's a tie!" : `${winner} wins!`}\n${player1.name}: ${player1.totalPoints} - ${player2.name}: ${player2.totalPoints}`);
-    
     // Notify parent
     if (onGameEnd) {
       onGameEnd();
