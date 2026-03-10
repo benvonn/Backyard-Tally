@@ -29,7 +29,6 @@ export default class Player {
     };
   }
 
-  // ✅ ADD THIS STATIC METHOD
   static fromJSON(obj) {
     if (!obj) return null;
     const player = new Player(obj.id, obj.name);

@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Define the initial game state
 const INITIAL_GAME_STATE = {
-  users: [],
+  users: JSON.parse(localStorage.getItem("allUsers") || "[]"),
   selectedPlayer1: null,
   selectedPlayer2: null,
   player1: null,
@@ -17,8 +17,6 @@ const INITIAL_GAME_STATE = {
   gameStarted: false,
   currentRound: 1,
 };
-
-const GAME_STORAGE_KEY = 'currentGameState';
 
 export default function Pro_main_area() {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
@@ -235,171 +233,177 @@ export default function Pro_main_area() {
           </p>
         )}
         
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '8px' }}>
-            Player 1:
-            <div ref={player1Ref} style={{ position: 'relative', display: 'inline-block' }}>
-              <button 
-                id="player1-dropdown-toggle"
-                onClick={() => setShowPlayer1Dropdown(!showPlayer1Dropdown)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#00ff00',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  padding: 0,
-                  font: 'inherit',
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '16px',
-                  margin: '8px auto',
-                  width: '200px',
-                  justifyContent: 'center'
-                }}
-              >
-                {player1Name} ▼
-              </button>
-              
-              {showPlayer1Dropdown && (
-                <div 
-                  id="player1-dropdown"
-                  style={{ 
-                    position: 'absolute', 
-                    background: 'rgba(53, 53, 53, 1)', 
-                    border: '1px solid #a4a4a4ff',
-                    borderRadius: '4px',
-                    padding: '8px',
-                    marginTop: '4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    zIndex: 1000,
-                    minWidth: '200px',
-                    left: '50%',
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  {gameState.users.map((user) => (
-                    <button
-                      key={user.id}
-                      onClick={() => {
-                        setGameState(prev => ({ ...prev, selectedPlayer1: user.id }));
-                        setShowPlayer1Dropdown(false);
-                      }}
-                      style={{
-                        display: 'block',
-                        width: '100%',
-                        padding: '8px 16px',
-                        border: 'none',
-                        background: user.id === gameState.selectedPlayer1 ? '#4f4f4f' : 'transparent',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        borderRadius: '4px',
-                        color: 'white'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#6e6e6e';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = user.id === gameState.selectedPlayer1 ? '#4f4f4f' : 'transparent';
-                      }}
-                    >
-                      {user.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>  
-          </label>
+<div style={{ marginBottom: '20px' }}>
+  <label style={{ display: 'block', marginBottom: '8px' }}>
+    Player 1:
+    <div ref={player1Ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button 
+        id="player1-dropdown-toggle"
+        onClick={() => setShowPlayer1Dropdown(!showPlayer1Dropdown)}
+        style={{
+          background: '#0f0',
+          border: '2.5px solid #0f0',
+          color: '#000',
+          cursor: 'pointer',
+          padding: '0',
+          fontFamily: 'VT323',
+          fontSize: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          margin: '8px auto',
+          width: '200px',
+        }}
+      >
+        <span style={{ paddingLeft: '12px' }}>{player1Name}</span>
+        <span style={{ paddingRight: '12px' }}>▼</span>
+      </button>
+      
+      {showPlayer1Dropdown && (
+        <div 
+          id="player1-dropdown"
+          style={{ 
+            position: 'absolute', 
+            background: '#000',
+            border: '5px solid #0f0',
+            padding: '8px',
+            marginTop: '4px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            zIndex: 1000,
+            minWidth: '200px',
+            left: '50%',
+            transform: 'translateX(-50%)'
+          }}
+        >
+          {gameState.users.map((user) => (
+            <button
+              key={user.id}
+              onClick={() => {
+                setGameState(prev => ({ ...prev, selectedPlayer1: user.id }));
+                setShowPlayer1Dropdown(false);
+              }}
+              style={{
+                display: 'block',
+                width: '100%',
+                padding: '8px 16px',
+                border: '2.5px solid #0f0',
+                background: user.id === gameState.selectedPlayer1 ? '#0f0' : '#000',
+                color: user.id === gameState.selectedPlayer1 ? '#000' : '#0f0',
+                textAlign: 'left',
+                cursor: 'pointer',
+                fontFamily: 'VT323',
+                fontSize: '20px',
+                marginBottom: '4px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#0f0';
+                e.currentTarget.style.color = '#000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = user.id === gameState.selectedPlayer1 ? '#0f0' : '#000';
+                e.currentTarget.style.color = user.id === gameState.selectedPlayer1 ? '#000' : '#0f0';
+              }}
+            >
+              {user.name}
+            </button>
+          ))}
         </div>
+      )}
+    </div>  
+  </label>
+</div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '8px' }}>
-            Player 2:
-            <div ref={player2Ref} style={{ position: 'relative', display: 'inline-block' }}>
-              <button 
-                id="player2-dropdown-toggle"
-                onClick={() => setShowPlayer2Dropdown(!showPlayer2Dropdown)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#00ff00',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  padding: 0,
-                  font: 'inherit',
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '16px',
-                  margin: '8px auto',
-                  width: '200px',
-                  justifyContent: 'center'
-                }}
-              >
-                {player2Name} ▼
-              </button>
-              
-              {showPlayer2Dropdown && (
-                <div 
-                  id="player2-dropdown"
-                  style={{ 
-                    position: 'absolute', 
-                    background: 'rgba(53, 53, 53, 1)', 
-                    border: '1px solid #a4a4a4ff',
-                    borderRadius: '4px',
-                    padding: '8px',
-                    marginTop: '4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    zIndex: 1000,
-                    minWidth: '200px',
-                    left: '50%',
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  {gameState.users.map((user) => (
-                    <button
-                      key={user.id}
-                      onClick={() => {
-                        setGameState(prev => ({ ...prev, selectedPlayer2: user.id }));
-                        setShowPlayer2Dropdown(false);
-                      }}
-                      style={{
-                        display: 'block',
-                        width: '100%',
-                        padding: '8px 16px',
-                        border: 'none',
-                        background: user.id === gameState.selectedPlayer2 ? '#4f4f4f' : 'transparent',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        borderRadius: '4px',
-                        color: 'white'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#6e6e6e';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = user.id === gameState.selectedPlayer2 ? '#4f4f4f' : 'transparent';
-                      }}
-                    >
-                      {user.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </label>
+<div style={{ marginBottom: '20px' }}>
+  <label style={{ display: 'block', marginBottom: '8px' }}>
+    Player 2:
+    <div ref={player2Ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button 
+        id="player2-dropdown-toggle"
+        onClick={() => setShowPlayer2Dropdown(!showPlayer2Dropdown)}
+        style={{
+          background: '#0f0',
+          border: '2.5px solid #0f0',
+          color: '#000',
+          cursor: 'pointer',
+          padding: '0',
+          fontFamily: 'VT323',
+          fontSize: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          margin: '8px auto',
+          width: '200px',
+        }}
+      >
+        <span style={{ paddingLeft: '12px' }}>{player2Name}</span>
+        <span style={{ paddingRight: '12px' }}>▼</span>
+      </button>
+      
+      {showPlayer2Dropdown && (
+        <div 
+          id="player2-dropdown"
+          style={{ 
+            position: 'absolute', 
+            background: '#000',
+            border: '5px solid #0f0',
+            padding: '8px',
+            marginTop: '4px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            zIndex: 1000,
+            minWidth: '200px',
+            left: '50%',
+            transform: 'translateX(-50%)'
+          }}
+        >
+          {gameState.users.map((user) => (
+            <button
+              key={user.id}
+              onClick={() => {
+                setGameState(prev => ({ ...prev, selectedPlayer2: user.id }));
+                setShowPlayer2Dropdown(false);
+              }}
+              style={{
+                display: 'block',
+                width: '100%',
+                padding: '8px 16px',
+                border: '2.5px solid #0f0',
+                background: user.id === gameState.selectedPlayer2 ? '#0f0' : '#000',
+                color: user.id === gameState.selectedPlayer2 ? '#000' : '#0f0',
+                textAlign: 'left',
+                cursor: 'pointer',
+                fontFamily: 'VT323',
+                fontSize: '20px',
+                marginBottom: '4px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#0f0';
+                e.currentTarget.style.color = '#000';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = user.id === gameState.selectedPlayer2 ? '#0f0' : '#000';
+                e.currentTarget.style.color = user.id === gameState.selectedPlayer2 ? '#000' : '#0f0';
+              }}
+            >
+              {user.name}
+            </button>
+          ))}
         </div>
-
+      )}
+    </div>
+  </label>
+</div>
         <button
           onClick={startGame}
           disabled={gameState.users.length === 0}
           style={{
-            padding: '12px 24px',
-            fontSize: '18px',
-            background: gameState.users.length === 0 ? '#ccc' : '#00ff00',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: gameState.users.length === 0 ? 'not-allowed' : 'pointer'
+            padding: '0.5rem 1rem',
+            fontSize: '20px',
+            fontFamily: 'VT323',
+            background: gameState.users.length === 0 ? '#000' : '#0f0',
+            color: gameState.users.length === 0 ? '#0f0' : '#000',
+            border: '2.5px solid #0f0',
+            cursor: gameState.users.length === 0 ? 'not-allowed' : 'pointer',
+            opacity: gameState.users.length === 0 ? 0.5 : 1,
           }}
         >
           Start Game
@@ -585,7 +589,7 @@ export default function Pro_main_area() {
         </div>
       </section>
 
-      {/* ✅ NEW: Game Over Overlay */}
+      {/*  NEW: Game Over Overlay */}
       {gameEnded && player1 && player2 && (
         <div
           style={{
