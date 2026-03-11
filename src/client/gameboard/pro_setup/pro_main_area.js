@@ -26,7 +26,8 @@ export default function Pro_main_area() {
   const player1Ref = useRef(null);
   const player2Ref = useRef(null);
 
-  // Load saved game state on mount
+  const GAME_STORAGE_KEY = 'currentGameState';
+
   useEffect(() => {
     const savedGame = localStorage.getItem(GAME_STORAGE_KEY);
     if (savedGame) {

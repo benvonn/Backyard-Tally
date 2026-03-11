@@ -76,20 +76,20 @@ export default function RoundButton({ player1, player2, currentRound, onEndRound
   };
 
   return (
-    <button 
-      onClick={handleEndRound}
-      style={{
-        padding: '12px 20px',
-        fontSize: '16px',
-        background: '#00ff00ff', // Same green as EndGame
-        color: 'white',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        margin: '10px' // Same margin as EndGame
-      }}
-    >
-      End Round
-    </button>
-  );
+<button 
+  onClick={handleEndRound}
+  style={{
+    padding: '0.5rem 1rem',
+    fontSize: '20px',
+    fontFamily: 'VT323',
+    background: '#0f0',
+    color: '#000',
+    border: '2.5px solid #0f0',
+    cursor: 'pointer',
+    margin: '10px'
+  }}
+>
+  End Round
+</button>
+  )
 }
