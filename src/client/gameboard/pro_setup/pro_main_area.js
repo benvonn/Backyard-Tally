@@ -4,6 +4,7 @@ import RoundButton from '../RoundButton';
 import GameEndButton from '../../components/EndGame.tsx';
 import GlitchyTouchButton from '../../components/StyledTouchButton.tsx'; 
 import { useNavigate } from 'react-router-dom';
+import MiniLoadingScreen from '../../components/MiniLoadingScreen.tsx';
 
 // Define the initial game state
 const INITIAL_GAME_STATE = {
@@ -22,11 +23,13 @@ export default function Pro_main_area() {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [showPlayer1Dropdown, setShowPlayer1Dropdown] = useState(false);
   const [showPlayer2Dropdown, setShowPlayer2Dropdown] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const navigate = useNavigate();
   const player1Ref = useRef(null);
   const player2Ref = useRef(null);
 
   const GAME_STORAGE_KEY = 'currentGameState';
+  const GUEST = {id: 'guest', name: 'Guest'};
 
   useEffect(() => {
     const savedGame = localStorage.getItem(GAME_STORAGE_KEY);
@@ -50,15 +53,15 @@ export default function Pro_main_area() {
 
   // Save game state whenever it changes (after initial load)
   useEffect(() => {
-    if (gameState.gameStarted) {
-      const serializableState = {
-        ...gameState,
-        player1: gameState.player1 ? gameState.player1.toJSON() : null,
-        player2: gameState.player2 ? gameState.player2.toJSON() : null,
-      };
-      localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(serializableState));
-    }
-  }, [gameState]);
+  if (gameState.gameStarted && gameState.player1?.id !== 'guest' && gameState.player2?.id !== 'guest') {
+    const serializableState = {
+      ...gameState,
+      player1: gameState.player1 ? gameState.player1.toJSON() : null,
+      player2: gameState.player2 ? gameState.player2.toJSON() : null,
+    };
+    localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(serializableState));
+  }
+}, [gameState]);
 
   const loadUsersFromCache = () => {
     const cachedUsers = localStorage.getItem("allUsers");
@@ -82,7 +85,7 @@ export default function Pro_main_area() {
     console.log('Selected ID1:', gameState.selectedPlayer1, 'ID2:', gameState.selectedPlayer2, 'Users:', gameState.users);
 
     const user1 = gameState.users.find(u => u.id == gameState.selectedPlayer1);
-    const user2 = gameState.users.find(u => u.id == gameState.selectedPlayer2);
+    const user2 = gameState.users.find(u => u.id == gameState.selectedPlayer2) ?? GUEST;
 
     if (!user1 || !user2) {
       alert("Selected users not found! Check console for details.");
@@ -110,12 +113,21 @@ export default function Pro_main_area() {
 
   const handleGameEnd = () => {
     setGameState(prev => ({ ...prev, gameEnded: true }));
-    localStorage.removeItem(GAME_STORAGE_KEY); // Clear saved state on game end
+    if (gameState.player1?.id !== 'guest' && gameState.player2?.id !== 'guest') {
+      localStorage.removeItem(GAME_STORAGE_KEY);
+    }
   };
 
   const resetGame = () => {
     localStorage.removeItem(GAME_STORAGE_KEY);
     setGameState(INITIAL_GAME_STATE);
+  };
+  const handlePostGame = (action) => {
+    setResetting(true);
+    setTimeout(() => {
+      action();
+    setResetting(false);
+  }, 1000);
   };
   
   // Use useCallback to memoize the functions to prevent unnecessary re-renders
@@ -218,11 +230,11 @@ export default function Pro_main_area() {
   if (!gameState.gameStarted) {
     const player1Name = gameState.selectedPlayer1 
       ? gameState.users.find(u => u.id === gameState.selectedPlayer1)?.name || "-- Select Player 1 --"
-      : "-- Select Player 1 --";
+      : "Select Player 1";
     
     const player2Name = gameState.selectedPlayer2 
       ? gameState.users.find(u => u.id === gameState.selectedPlayer2)?.name || "-- Select Player 2 --"
-      : "-- Select Player 2 --";
+      : "Select Player 2";
 
     return (
       <div style={{ padding: '20px', textAlign: 'center', fontFamily: 'VT323' }}>
@@ -590,72 +602,69 @@ export default function Pro_main_area() {
         </div>
       </section>
 
-      {/*  NEW: Game Over Overlay */}
+      {/*  Game Over Overlay */}
+      {resetting && <MiniLoadingScreen/>}
       {gameEnded && player1 && player2 && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            backgroundColor: 'rgba(0, 0, 0, 0.95)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000,
-            fontFamily: 'VT323',
-            color: '#00ff00',
-            border: '2px solid #00ff00',
-          }}
-        >
-          <h2 style={{ fontSize: '36px', marginBottom: '20px', textTransform: 'uppercase' }}>
-            Game Over!
-          </h2>
-          <p style={{ fontSize: '22px', marginBottom: '30px', textAlign: 'center' }}>
-            {player1.totalPoints > player2.totalPoints
-              ? `${player1.name} wins!`
-              : player2.totalPoints > player1.totalPoints
-              ? `${player2.name} wins!`
-              : "It's a tie!"}
-          </p>
-          <button
-            onClick={resetGame}
-            style={{
-              padding: '14px 36px',
-              fontSize: '22px',
-              background: '#00ff00',
-              color: '#000',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontFamily: 'VT323',
-              textTransform: 'uppercase',
-              marginBottom: '20px',
-            }}
-          >
-            New Game
-          </button>
-          <button
-            onClick={() => navigate('/home')}
-            style={{
-              padding: '14px 36px',
-              fontSize: '22px',
-              background: '#00ff00',
-              color: '#000',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontFamily: 'VT323',
-              textTransform: 'uppercase',
-            }}
-          >
-            Home
-          </button>
-        </div>
+  <div
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      backgroundColor: 'rgba(0, 0, 0, 0.95)',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000,
+      fontFamily: 'VT323',
+      color: '#0f0',
+      border: '2.5px solid #0f0',
+    }}
+  >
+    <h2 style={{ fontSize: '36px', marginBottom: '20px', textTransform: 'uppercase' }}>
+      Game Over!
+    </h2>
+    <p style={{ fontSize: '22px', marginBottom: '30px', textAlign: 'center' }}>
+      {player1.totalPoints > player2.totalPoints
+        ? `${player1.name} wins!`
+        : player2.totalPoints > player1.totalPoints
+        ? `${player2.name} wins!`
+        : "It's a tie!"}
+    </p>
+    <button
+      onClick={() => handlePostGame(resetGame)}
+      style={{
+        padding: '0.5rem 1rem',
+        fontSize: '20px',
+        background: '#0f0',
+        color: '#000',
+        border: '2.5px solid #0f0',
+        cursor: 'pointer',
+        fontFamily: 'VT323',
+        textTransform: 'uppercase',
+        marginBottom: '20px',
+      }}
+    >
+      New Game
+    </button>
+    <button
+      onClick={() => handlePostGame(() => navigate('/user/profile'))}
+      style={{
+        padding: '0.5rem 1rem',
+        fontSize: '20px',
+        background: '#0f0',
+        color: '#000',
+        border: '2.5px solid #0f0',
+        cursor: 'pointer',
+        fontFamily: 'VT323',
+        textTransform: 'uppercase',
+      }}
+    >
+      Profile
+    </button>
+  </div>
       )}
     </div>
   );
