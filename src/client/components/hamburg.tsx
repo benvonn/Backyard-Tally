@@ -58,7 +58,7 @@ export default function Hamburg() {
         <Modal onClose={() => setIsOpened(false)}>
           <StyledButton onClick={() => navigate("/home")}>Home</StyledButton>
           <StyledButton onClick={() => navigate("/user/profile")}>Profile</StyledButton>
-          <StyledButton onClick={() => navigate("/comingSoon")}>History</StyledButton>
+          <StyledButton onClick={() => navigate("/history")}>History</StyledButton>
           <StyledButton onClick={() => navigate("/")}>Landing</StyledButton>
         </Modal>
       )}

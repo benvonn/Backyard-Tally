@@ -1,5 +1,35 @@
 // LoadingScreen.tsx
 import React, { useState, useEffect, useRef } from "react";
+import styled from "@emotion/styled";
+
+const StyledButton = styled.button`
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-family: VT323;
+  background: rgb(0, 0, 0);
+  color: #0f0;
+  border: 2px solid #0f0;
+  cursor: pointer;
+
+  &:hover {
+    background: #0f0;
+    color: #000;
+    border-color: #0f0;
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:focus {
+    outline: 2px solid #1aff00;
+    outline-offset: 2px;
+  }
+`;
+
+const StyledButtonOutline = styled(StyledButton)`
+  background: #000;
+  color: #0f0;
+  border: 2px solid #0f0;
+`;
 
 const URL = "";
 const HEALTH_CHECK_URL = `/api/health`;
@@ -66,8 +96,8 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
   }, []);
 
   useEffect(() => {
-    let pollInterval: NodeJS.Timeout | null = null;
-    let timeoutTimer: NodeJS.Timeout | null = null;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+    let timeoutTimer: ReturnType<typeof setTimeout> | null = null;
 
     if (userProfileExists) {
         setMessage("Profile found. Loading application...");
@@ -78,24 +108,24 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
     }
       
     const fetchUsers = async () => {
-    try {
-      const res = await fetch(USERS_URL, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+      try {
+        const res = await fetch(USERS_URL, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
 
-      const data = await res.json();
-      setUsers(data);
-      localStorage.setItem("allUsers", JSON.stringify(data));
-    } catch (err) {
-      if (users.length === 0) {
+        const data = await res.json();
+        setUsers(data);
+        localStorage.setItem("allUsers", JSON.stringify(data));
+      } catch (err) {
+        if (users.length === 0) {
+        }
       }
-    }
-  };
+    };
 
     const checkHealth = async () => {
       try {
@@ -132,7 +162,6 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
           clearInterval(pollInterval);
           pollInterval = null;
         }
-        onHealthCheckComplete("error", errorMessage);
       }
     };
 
@@ -148,9 +177,7 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
       if (status === "checking") {
         setStatus("error");
         setMessage("Health check timed out. Please try again later.");
-        const timeoutError = "Health check timed out.";
-        setErrorDetails(timeoutError);
-        onHealthCheckComplete("error", timeoutError);
+        setErrorDetails("Health check timed out.");
       }
     }, TIMEOUT_DURATION);
 
@@ -175,12 +202,12 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
       <div style={styles.container}>
         <canvas ref={canvasRef} style={styles.canvas} />
         <div style={styles.content}>
-          <h2 style={styles.title}>System Check Failed</h2>
-          <p style={styles.message}>{message}</p>
-          {errorDetails && <p style={styles.errorDetails}>Error: {errorDetails}</p>}
-          <button onClick={handleRetry} style={styles.retryButton}>
-            Retry
-          </button>
+          <h2 style={styles.title}>Connection Failed</h2>
+          <p style={styles.message}>Do you want to continue in Offline Mode? You will be able to save your stats later.</p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <StyledButton onClick={() => onHealthCheckComplete("healthy")}>Yes</StyledButton>
+            <StyledButtonOutline onClick={handleRetry}>Retry</StyledButtonOutline>
+          </div>
         </div>
       </div>
     );
@@ -219,7 +246,7 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    zIndex: -1,
+    zIndex: 0,  // changed from -1
   },
   content: {
     textAlign: "center" as const,
@@ -228,7 +255,8 @@ const styles = {
     borderRadius: "0",
     border: 'solid 2px #0f0',
     boxShadow: "none",
-    zIndex: 1,
+    zIndex: 1,  // already correct, just make sure position is set
+    position: "relative" as const,  // add this
   },
   title: {
     fontSize: "1.5rem",
