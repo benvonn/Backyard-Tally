@@ -6,6 +6,7 @@ import { ReactNode, MouseEvent as ReactMouseEvent } from "react"; // Import Reac
 interface ModalProps {  
   onClose: () => void;  
   children: ReactNode;  
+  isOpen?: boolean;
 }
 
 // The component function signature should match the interface

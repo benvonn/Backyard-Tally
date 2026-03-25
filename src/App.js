@@ -2,8 +2,8 @@
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import { useContext } from 'react';
-import LandingPage from './client/pages/LandingPage.js';
-import UserProfile from './client/user-profile/UserProfile.js';
+import LandingPage from './client/pages/LandingPage.tsx';
+import UserProfile from './client/user-profile/UserProfile.tsx';
 import UserSetup from './client/setup/UserSetup.tsx';
 import Home from './client/pages/Home.tsx';
 import History from './client/history/History.js';

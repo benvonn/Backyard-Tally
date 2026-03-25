@@ -3,7 +3,7 @@ import Modal from "../components/modal.tsx";
 import { useNavigate } from "react-router-dom";
 import UserSetup from "../setup/UserSetup.tsx"; 
 import LoadingScreen from "../utils/LoadingScreen.tsx"; 
-import isValidOfflineToken from "../user-profile/ValidToken.js";   // ← added
+import isValidOfflineToken from "../user-profile/ValidToken.js";
 import styled from "@emotion/styled";
 
 const StyledButton = styled.button`
@@ -35,32 +35,22 @@ const StyledButton = styled.button`
 `;
 
 export default function LandingPage() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [healthCheckStatus, setHealthCheckStatus] = useState("checking"); 
-    const [errorDetails, setErrorDetails] = useState(null); 
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [healthCheckStatus, setHealthCheckStatus] = useState<"checking" | "healthy" | "error">("checking");
+    const [errorDetails, setErrorDetails] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    // ==================== ONLY CHANGE ====================
-    // Auto-redirect if valid offline session exists
     useEffect(() => {
-        if (healthCheckStatus !== "healthy") return;   // wait for health check first
-
-        console.log("=== LANDING OFFLINE CHECK STARTED ===");
+        if (healthCheckStatus !== "healthy") return;
 
         const storedToken = localStorage.getItem("offlineToken");
         const storedProfileStr = localStorage.getItem("userProfile");
         const storedProfile = storedProfileStr ? JSON.parse(storedProfileStr) : null;
 
-        console.log("Token exists:", !!storedToken);
-        console.log("Profile exists:", !!storedProfile);
-
         if (storedToken && storedProfile) {
             try {
                 const isValid = isValidOfflineToken(storedToken);
-                console.log("Token valid?", isValid);
-
                 if (isValid) {
-                    console.log("Valid offline session → redirecting to /home");
                     navigate("/home", { replace: true });
                     return;
                 }
@@ -68,10 +58,7 @@ export default function LandingPage() {
                 console.error("Token validation failed:", e);
             }
         }
-
-        console.log("❌ No valid offline session — showing login screen");
     }, [healthCheckStatus, navigate]);
-    // ====================================================
 
     useEffect(() => {
         if (healthCheckStatus === "checking" && sessionStorage.getItem("healthCheckCompleted") === "true") {
@@ -79,8 +66,7 @@ export default function LandingPage() {
         }
     }, [healthCheckStatus]);
 
-    const handleHealthCheckComplete = (status, details) => {
-        console.log("Health check reported status:", status, details);
+    const handleHealthCheckComplete = (status: "healthy" | "error", details?: string) => {
         setHealthCheckStatus(status);
         if (status === "healthy") {
             sessionStorage.setItem("healthCheckCompleted", "true");
@@ -110,7 +96,6 @@ export default function LandingPage() {
         );
     }
 
-    // Main LandingPage content (only shows if no offline session)
     return (
         <div>
             <h1>Welcome to Backyard Tally</h1>
@@ -121,9 +106,7 @@ export default function LandingPage() {
             {isModalOpen && (
                 <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                     <UserSetup 
-                        onComplete={() => {
-                            setIsModalOpen(false); 
-                        }} 
+                        onComplete={() => setIsModalOpen(false)} 
                     />
                 </Modal>
             )}

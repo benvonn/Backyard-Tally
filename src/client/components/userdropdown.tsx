@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 
 interface User {
-  id: number;
+  id: number | string;
   name: string;
 }
 
 interface UserDropdownProps {
   users: User[];
   currentUserName: string;
-  currentUserId?: number | null;
+  currentUserId?: number | string | null;
   onUserSelect: (user: User) => void;
   onLogout: () => void;
   isOpen: boolean;

@@ -11,6 +11,15 @@ const URL = "";
 const USERS_URL = `${URL}/api/users`;
 const LOGIN_URL = `${URL}/api/users/login`;
 
+interface UserProfile {
+  id: number | string
+  name: string;
+}
+interface User {
+  id: number | string;
+  name: string;
+}
+
 const LogoutButtonStyle = styled.button`
   background: #000000ff;
   border: 2.5px solid #f00;
@@ -35,15 +44,15 @@ const LogoutButtonStyle = styled.button`
 `;
 
 export default function UserProfile() {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [passcodeInput, setPasscodeInput] = useState("");
-  const [loginError, setLoginError] = useState("");
-  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [passcodeInput, setPasscodeInput] = useState<string>("");
+  const [loginError, setLoginError] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [showTour, setShowTour] = useState(false);
-  const [activePanel, setActivePanel] = useState(null);
+  const [activePanel, setActivePanel] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -102,11 +111,11 @@ export default function UserProfile() {
       setUsers(JSON.parse(cachedUsers));
     }
   };
-  const togglePanel = (panel) => {
+  const togglePanel = (panel: string) => {
     setActivePanel((prev) => (prev === panel ? null : panel));
   }
 
-  const handleUserSelect = (user) => {
+  const handleUserSelect = (user: User) => {
     setSelectedUser(user);
     setShowLoginModal(true);
     setPasscodeInput("");
@@ -127,7 +136,7 @@ export default function UserProfile() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: selectedUser.name,
+          name: selectedUser!.name,
           passcode: passcodeInput,
         }),
       });
@@ -144,7 +153,7 @@ export default function UserProfile() {
       login(userProfile, data.offlineToken);
 
       const allUsers = JSON.parse(localStorage.getItem("allUsers") || "[]");
-      const userIndex = allUsers.findIndex((u) => u.id === data.id);
+      const userIndex = allUsers.findIndex((u: User) => u.id === data.id);
       if (userIndex !== -1) {
         allUsers[userIndex] = userProfile;
       } else {
@@ -223,6 +232,8 @@ export default function UserProfile() {
             currentUserId={profile.id}
             onUserSelect={handleUserSelect}
             onLogout={handleLogout}
+            isOpen={activePanel === "dropdown"}
+            onToggle={() => togglePanel("dropdown")}
           />
           <LogoutButtonStyle onClick={handleLogout}>Logout</LogoutButtonStyle>
         </div>
