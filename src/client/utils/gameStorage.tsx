@@ -1,9 +1,28 @@
-// utils/gameStorage.js
+// utils/gameStorage.ts
 
-// Save round data to localStorage
-export function saveRoundData(roundData) {
+interface RoundData {
+  roundNumber: number;
+  player1RoundScore: number;
+  player2RoundScore: number;
+  player1TotalBefore: number;
+  player2TotalBefore: number;
+  player1RoundBagsIn?: number;
+  player1RoundBagsOn?: number;
+  player2RoundBagsIn?: number;
+  player2RoundBagsOn?: number;
+  timestamp: string;
+}
+
+interface GameData {
+  player1TotalBagsIn?: number;
+  player1TotalBagsOn?: number;
+  player2TotalBagsIn?: number;
+  player2TotalBagsOn?: number;
+  [key: string]: any;
+}
+
+export function saveRoundData(roundData: RoundData): void {
   try {
-    // Ensure bag counts are included if provided
     const completeRoundData = {
       ...roundData,
       player1RoundBagsIn: roundData.player1RoundBagsIn || 0,
@@ -12,7 +31,7 @@ export function saveRoundData(roundData) {
       player2RoundBagsOn: roundData.player2RoundBagsOn || 0
     };
     
-    const existingRounds = JSON.parse(localStorage.getItem("tempRoundData") || "[]");
+    const existingRounds: RoundData[] = JSON.parse(localStorage.getItem("tempRoundData") || "[]");
     existingRounds.push(completeRoundData);
     localStorage.setItem("tempRoundData", JSON.stringify(existingRounds));
     console.log("Round data saved to localStorage:", completeRoundData);
@@ -21,8 +40,7 @@ export function saveRoundData(roundData) {
   }
 }
 
-// Get all temporary round data
-export function getTempRoundData() {
+export function getTempRoundData(): RoundData[] {
   try {
     return JSON.parse(localStorage.getItem("tempRoundData") || "[]");
   } catch (error) {
@@ -31,11 +49,8 @@ export function getTempRoundData() {
   }
 }
 
-
-// Save complete game (for EndGameButton)
-export function saveCompleteGame(gameData) {
+export function saveCompleteGame(gameData: GameData): void {
   try {
-    // Optionally add total bag counts to gameData if needed
     const completeGameData = {
       ...gameData,
       player1TotalBagsIn: gameData.player1TotalBagsIn || 0,
@@ -44,7 +59,7 @@ export function saveCompleteGame(gameData) {
       player2TotalBagsOn: gameData.player2TotalBagsOn || 0
     };
     
-    const existingGames = JSON.parse(localStorage.getItem("gameHistory") || "[]");
+    const existingGames: GameData[] = JSON.parse(localStorage.getItem("gameHistory") || "[]");
     existingGames.push(completeGameData);
     localStorage.setItem("gameHistory", JSON.stringify(existingGames));
     console.log("Game saved to localStorage:", completeGameData);

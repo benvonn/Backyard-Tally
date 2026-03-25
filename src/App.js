@@ -4,11 +4,11 @@ import { Routes, Route } from 'react-router-dom';
 import { useContext } from 'react';
 import LandingPage from './client/pages/LandingPage.js';
 import UserProfile from './client/user-profile/UserProfile.js';
-import UserSetup from './client/setup/UserSetup.js';
-import Home from './client/pages/Home.js';
+import UserSetup from './client/setup/UserSetup.tsx';
+import Home from './client/pages/Home.tsx';
 import History from './client/history/History.js';
 import { AuthProvider } from './client/contexts/AuthContext.js';
-import ProtectedRoute from './client/components/ProtectedRoutes.js';
+import ProtectedRoute from './client/components/ProtectedRoutes.tsx';
 import Hamburg from './client/components/hamburg.tsx';
 import ComingSoon from './client/pages/comingSoon.tsx';
 
@@ -55,10 +55,10 @@ function App() { // Remove toggleTheme and currentTheme props
         <Route path="/" element={<LandingPage />} />
         <Route path="/user/setup/profile" element={<UserSetup />} />
         
-        {/* ✅ REMOVE ProtectedRoute from UserProfile - it's the LOGIN page! */}
+        {/* REMOVE ProtectedRoute from UserProfile - it's the LOGIN page! */}
         <Route path="/user/profile" element={<UserProfile />} />
         
-        {/* ✅ Keep ProtectedRoute only for actual protected pages */}
+        {/* Keep ProtectedRoute only for actual protected pages */}
         <Route path="/home" element={
           <ProtectedRoute>
             <Home />

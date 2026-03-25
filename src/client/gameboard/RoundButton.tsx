@@ -1,14 +1,20 @@
-// components/RoundButton.jsx
+// components/RoundButton.tsx
 import React from 'react';
-import { saveRoundData } from '../utils/gameStorage';
-import Player from './logic/gameLogic.js';
+import { saveRoundData } from '../utils/gameStorage.tsx';
+import Player from './logic/gameLogic.tsx';
 
-export default function RoundButton({ player1, player2, currentRound, onEndRound }) {
+interface RoundButtonProps {
+  player1: InstanceType<typeof Player>;
+  player2: InstanceType<typeof Player>;
+  currentRound: number;
+  onEndRound: (updatedPlayer1: InstanceType<typeof Player>, updatedPlayer2: InstanceType<typeof Player>) => void;
+}
+
+export default function RoundButton({ player1, player2, currentRound, onEndRound }: RoundButtonProps) {
   const handleEndRound = () => {
-    console.log("P1 bags on:", player1.roundBagsOn, "bags in:", player1.roundBagsIn);  // Updated log for round
-    console.log("P2 bags on:", player2.roundBagsOn, "bags in:", player2.roundBagsIn);  // Updated log for round
+    console.log("P1 bags on:", player1.roundBagsOn, "bags in:", player1.roundBagsIn);
+    console.log("P2 bags on:", player2.roundBagsOn, "bags in:", player2.roundBagsIn);
     
-    // Save round data to localStorage BEFORE any calculations (raw round points + bags)
     const roundData = {
       roundNumber: currentRound,
       player1RoundScore: player1.roundPoints,
@@ -24,7 +30,6 @@ export default function RoundButton({ player1, player2, currentRound, onEndRound
     
     saveRoundData(roundData);
     
-    // Create updated players as class instances
     const updatedPlayer1 = new Player(player1.id, player1.name);
     updatedPlayer1.totalPoints = player1.totalPoints;
     updatedPlayer1.roundScores = [...player1.roundScores];
@@ -41,7 +46,6 @@ export default function RoundButton({ player1, player2, currentRound, onEndRound
     updatedPlayer2.roundBagsIn = player2.roundBagsIn || 0;
     updatedPlayer2.roundBagsOn = player2.roundBagsOn || 0;
     
-    // Cornhole cancellation scoring logic
     const difference = Math.abs(player1.roundPoints - player2.roundPoints);
     let player1Net = 0;
     let player2Net = 0;
@@ -51,7 +55,6 @@ export default function RoundButton({ player1, player2, currentRound, onEndRound
     } else if (player2.roundPoints > player1.roundPoints) {
       player2Net = difference;
     }
-    // If tie, both nets remain 0
     
     updatedPlayer1.totalPoints += player1Net;
     updatedPlayer1.roundScores.push(player1Net);
@@ -59,37 +62,35 @@ export default function RoundButton({ player1, player2, currentRound, onEndRound
     updatedPlayer2.totalPoints += player2Net;
     updatedPlayer2.roundScores.push(player2Net);
     
-    // Reset for next round
     updatedPlayer1.roundPoints = 0;
     updatedPlayer1.bags = 4;
-    updatedPlayer1.roundBagsIn = 0;  // New reset
-    updatedPlayer1.roundBagsOn = 0;  // New reset
+    updatedPlayer1.roundBagsIn = 0;
+    updatedPlayer1.roundBagsOn = 0;
     updatedPlayer2.roundPoints = 0;
     updatedPlayer2.bags = 4;
-    updatedPlayer2.roundBagsIn = 0;  // New reset
-    updatedPlayer2.roundBagsOn = 0;  // New reset
+    updatedPlayer2.roundBagsIn = 0;
+    updatedPlayer2.roundBagsOn = 0;
     
-    // Notify parent with updated players
     if (onEndRound) {
       onEndRound(updatedPlayer1, updatedPlayer2);
     }
   };
 
   return (
-<button 
-  onClick={handleEndRound}
-  style={{
-    padding: '0.5rem 1rem',
-    fontSize: '20px',
-    fontFamily: 'VT323',
-    background: '#0f0',
-    color: '#000',
-    border: '2.5px solid #0f0',
-    cursor: 'pointer',
-    margin: '10px'
-  }}
->
-  End Round
-</button>
-  )
+    <button 
+      onClick={handleEndRound}
+      style={{
+        padding: '0.5rem 1rem',
+        fontSize: '20px',
+        fontFamily: 'VT323',
+        background: '#0f0',
+        color: '#000',
+        border: '2.5px solid #0f0',
+        cursor: 'pointer',
+        margin: '10px'
+      }}
+    >
+      End Round
+    </button>
+  );
 }

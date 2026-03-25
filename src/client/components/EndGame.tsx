@@ -1,8 +1,8 @@
 import React from 'react';
-import { saveCompleteGame, getTempRoundData } from '../utils/gameStorage';
+import { saveCompleteGame, getTempRoundData } from '../utils/gameStorage.tsx';
 
 interface Player {
-  id: number;
+  id: number | string;
   name: string;
   totalPoints: number;
   roundPoints: number;

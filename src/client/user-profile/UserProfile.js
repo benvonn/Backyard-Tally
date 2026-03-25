@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import UserDropdown from "../components/userdropdown.tsx";
 import isValidOfflineToken from "./ValidToken.js";
 import { useNavigate } from "react-router";
-import { getUserMetadata, setUserMetadata } from "../utils/onboarding.js";
+import { getUserMetadata, setUserMetadata } from "../utils/onboarding.tsx";
 import { useAuth } from "../contexts/AuthContext.js";
 import GameDataTable from "./UploadLocalStorage.tsx";
 import styled from "@emotion/styled";

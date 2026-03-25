@@ -1,16 +1,20 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserMetadata, setUserMetadata } from "../utils/onboarding";
+import { getUserMetadata, setUserMetadata } from "../utils/onboarding.tsx";
 
-export default function UserSetup({ onComplete }) { 
+interface UserSetupProps {
+  onComplete?: () => void;
+}
+
+export default function UserSetup({ onComplete }: UserSetupProps) { 
     const URL = '';
-    const [name, setName] = useState("");
-    const [passcode, setPasscode] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [name, setName] = useState<string>("");
+    const [passcode, setPasscode] = useState<string>("");
+    const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => { 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => { 
         e.preventDefault();
         setError("");
 
@@ -25,7 +29,7 @@ export default function UserSetup({ onComplete }) {
             const res = await fetch(`${URL}/api/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: name.trim(), passcode})
+                body: JSON.stringify({ name: name.trim(), passcode })
             });
 
             if (!res.ok) {
@@ -37,7 +41,7 @@ export default function UserSetup({ onComplete }) {
               onComplete(); 
             }
         } catch (err) { 
-            setError(err.message || "An error occurred. Please try again.");
+            setError((err as Error).message || "An error occurred. Please try again.");
         } finally {
             setLoading(false);
         }

@@ -1,13 +1,32 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import Player from "../logic/gameLogic";
-import RoundButton from '../RoundButton';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Player from "../logic/gameLogic.tsx";
+import RoundButton from '../RoundButton.tsx';
 import GameEndButton from '../../components/EndGame.tsx';
 import GlitchyTouchButton from '../../components/StyledTouchButton.tsx'; 
 import { useNavigate } from 'react-router-dom';
 import MiniLoadingScreen from '../../components/MiniLoadingScreen.tsx';
 
+interface User {
+  id: number | string;
+  name: string;
+}
+
+interface GameState {
+  users: User[];
+  selectedPlayer1: number | string | null;
+  selectedPlayer2: number | string | null;
+  player1: InstanceType<typeof Player> | null;
+  player2: InstanceType<typeof Player> | null;
+  roundHistory: any[];
+  gameEnded: boolean;
+  gameStarted: boolean;
+  currentRound: number;
+}
+
+const GUEST: User = { id: 'guest', name: 'Guest' };
+
 // Define the initial game state
-const INITIAL_GAME_STATE = {
+const INITIAL_GAME_STATE: GameState = {
   users: JSON.parse(localStorage.getItem("allUsers") || "[]"),
   selectedPlayer1: null,
   selectedPlayer2: null,
@@ -20,16 +39,15 @@ const INITIAL_GAME_STATE = {
 };
 
 export default function Pro_main_area() {
-  const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
+  const [gameState, setGameState] = useState<GameState>(INITIAL_GAME_STATE);
   const [showPlayer1Dropdown, setShowPlayer1Dropdown] = useState(false);
   const [showPlayer2Dropdown, setShowPlayer2Dropdown] = useState(false);
   const [resetting, setResetting] = useState(false);
   const navigate = useNavigate();
-  const player1Ref = useRef(null);
-  const player2Ref = useRef(null);
+  const player1Ref = useRef<HTMLDivElement>(null);
+  const player2Ref = useRef<HTMLDivElement>(null);
 
   const GAME_STORAGE_KEY = 'currentGameState';
-  const GUEST = {id: 'guest', name: 'Guest'};
 
   useEffect(() => {
     const savedGame = localStorage.getItem(GAME_STORAGE_KEY);
@@ -122,16 +140,17 @@ export default function Pro_main_area() {
     localStorage.removeItem(GAME_STORAGE_KEY);
     setGameState(INITIAL_GAME_STATE);
   };
-  const handlePostGame = (action) => {
+
+  const handlePostGame = (action: () => void) => {
     setResetting(true);
     setTimeout(() => {
       action();
-    setResetting(false);
-  }, 1000);
+      setResetting(false);
+    }, 1000);
   };
   
   // Use useCallback to memoize the functions to prevent unnecessary re-renders
-  const throwBagPlayer1 = useCallback((type) => {
+  const throwBagPlayer1 = useCallback((type: string) => {
     if (gameState.gameEnded) {
       alert("Game is over! Click 'New Game' to start again.");
       return;
@@ -148,18 +167,18 @@ export default function Pro_main_area() {
       updatedPlayer.roundScores = [...prevPlayer.roundScores];
       updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
       updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
-      updatedPlayer.roundBagsIn = prevPlayer.roundBagsIn || 0;  // New copy
-      updatedPlayer.roundBagsOn = prevPlayer.roundBagsOn || 0;  // New copy
+      updatedPlayer.roundBagsIn = prevPlayer.roundBagsIn || 0;
+      updatedPlayer.roundBagsOn = prevPlayer.roundBagsOn || 0;
       
       const success = updatedPlayer.throw(type);
       return success 
         ? { ...prevState, player1: updatedPlayer } 
         : prevState;
     });
-  }, [gameState.gameEnded]); // Dependency is gameEnded state
+  }, [gameState.gameEnded]);
 
   // Repeat the same for throwBagPlayer2
-  const throwBagPlayer2 = useCallback((type) => {
+  const throwBagPlayer2 = useCallback((type: string) => {
     if (gameState.gameEnded) {
       alert("Game is over! Click 'New Game' to start again.");
       return;
@@ -176,17 +195,17 @@ export default function Pro_main_area() {
       updatedPlayer.roundScores = [...prevPlayer.roundScores];
       updatedPlayer.totalBagsIn = prevPlayer.totalBagsIn;
       updatedPlayer.totalBagsOn = prevPlayer.totalBagsOn;
-      updatedPlayer.roundBagsIn = prevPlayer.roundBagsIn || 0;  // New copy
-      updatedPlayer.roundBagsOn = prevPlayer.roundBagsOn || 0;  // New copy
+      updatedPlayer.roundBagsIn = prevPlayer.roundBagsIn || 0;
+      updatedPlayer.roundBagsOn = prevPlayer.roundBagsOn || 0;
       
       const success = updatedPlayer.throw(type);
       return success 
         ? { ...prevState, player2: updatedPlayer } 
         : prevState;
     });
-  }, [gameState.gameEnded]); // Dependency is gameEnded state
+  }, [gameState.gameEnded]);
 
-  const handleEndRound = (updatedPlayer1, updatedPlayer2) => {
+  const handleEndRound = (updatedPlayer1: InstanceType<typeof Player>, updatedPlayer2: InstanceType<typeof Player>) => {
     setGameState(prevState => ({
       ...prevState,
       player1: updatedPlayer1,
@@ -196,8 +215,8 @@ export default function Pro_main_area() {
   };
 
   useEffect(() => {
-    const handleClickOutsidePlayer1 = (event) => {
-      if (player1Ref.current && !player1Ref.current.contains(event.target)) {
+    const handleClickOutsidePlayer1 = (event: MouseEvent) => {
+      if (player1Ref.current && !player1Ref.current.contains(event.target as Node)) {
         setShowPlayer1Dropdown(false);
       }
     };
@@ -212,8 +231,8 @@ export default function Pro_main_area() {
   }, [showPlayer1Dropdown]);
 
   useEffect(() => {
-    const handleClickOutsidePlayer2 = (event) => {
-      if (player2Ref.current && !player2Ref.current.contains(event.target)) {
+    const handleClickOutsidePlayer2 = (event: MouseEvent) => {
+      if (player2Ref.current && !player2Ref.current.contains(event.target as Node)) {
         setShowPlayer2Dropdown(false);
       }
     };

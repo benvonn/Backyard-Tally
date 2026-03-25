@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../components/modal.tsx"; 
 import { useNavigate } from "react-router-dom";
-import UserSetup from "../setup/UserSetup.js"; 
+import UserSetup from "../setup/UserSetup.tsx"; 
 import LoadingScreen from "../utils/LoadingScreen.tsx"; 
 import isValidOfflineToken from "../user-profile/ValidToken.js";   // ← added
 import styled from "@emotion/styled";
@@ -60,7 +60,7 @@ export default function LandingPage() {
                 console.log("Token valid?", isValid);
 
                 if (isValid) {
-                    console.log("✅ Valid offline session → redirecting to /home");
+                    console.log("Valid offline session → redirecting to /home");
                     navigate("/home", { replace: true });
                     return;
                 }

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Pro_Main_Area from "../gameboard/pro_setup/pro_main_area.js";
+import Pro_Main_Area from "../gameboard/pro_setup/pro_main_area.tsx";
 
-const URL = ""; 
 const USERS_URL = `/api/users`;
 
 export default function Home() {
-    const [selectedBoard, setSelectedBoard] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const navigate = useNavigate();
     
     useEffect(() => {
         fetchAndCacheUsers();
         
-        const userProfile = JSON.parse(localStorage.getItem("userProfile"));
+        const userProfile = JSON.parse(localStorage.getItem("userProfile") || "null");
         
         if (!userProfile) {
             setLoading(false);
@@ -34,8 +33,7 @@ export default function Home() {
                 const data = await res.json();
                 localStorage.setItem("allUsers", JSON.stringify(data));
             }
-        } catch (err) {
-        }
+        } catch (err) {}
     };
     
     if (loading) {

@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ New: Check auth status (validates token)
+  //Check auth status (validates token)
   const checkAuthStatus = () => {
     const userProfile = JSON.parse(localStorage.getItem("userProfile"));
     const offlineToken = localStorage.getItem("offlineToken");
@@ -27,14 +27,14 @@ export function AuthProvider({ children }) {
     return null;
   };
 
-  // ✅ New: Login method that updates context AND localStorage
+  //Login method that updates context AND localStorage
   const login = (userData, token) => {
     setUser(userData);
     localStorage.setItem("userProfile", JSON.stringify(userData));
     localStorage.setItem("offlineToken", token);
   };
 
-  // ✅ New: Logout method
+  // New: Logout method
   const logout = () => {
     setUser(null);
     localStorage.removeItem("userProfile");
