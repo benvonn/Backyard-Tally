@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Pro_Main_Area from "../gameboard/pro_setup/pro_main_area.tsx";
+import Pro_Main_Area from "../gameboard/pro_main_area.tsx";
 
 const USERS_URL = `/api/users`;
 

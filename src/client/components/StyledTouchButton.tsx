@@ -4,8 +4,7 @@ import TouchButton from './TouchControls'; // Import the original TouchControls
 import FaultyTerminal from './TouchBackground.tsx'; // Adjust path to FaultyTerminal
 
 interface StyledTouchButtonProps {
-  children: ReactNode; // This will be the large number to display
-  onPlusTap?: () => void; // Handler for the upper region (for +1 / +3)
+ onPlusTap?: () => void; // Handler for the upper region (for +1 / +3)
   onMinusTap?: () => void; // Handler for the lower region (for -1 / -3)
   bagIn: any;
   bagOn: any;
@@ -14,7 +13,7 @@ interface StyledTouchButtonProps {
   containerStyle?: React.CSSProperties;
 }
 
-const StyledTouchButtonComponent: React.FC<StyledTouchButtonProps> = ({
+const StyledTouchButtonComponent: React.FC<React.PropsWithChildren<StyledTouchButtonProps>> = ({
   children,
   onPlusTap,
   onMinusTap,
