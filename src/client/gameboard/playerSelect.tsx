@@ -1,6 +1,6 @@
 // components/game/PlayerSelect.tsx
 import { useState } from 'react';
-import UserDropdown from '../components/userdropdown';
+import UserDropdown from '../components/userdropdown.tsx';
 
 interface User {
   id: number;

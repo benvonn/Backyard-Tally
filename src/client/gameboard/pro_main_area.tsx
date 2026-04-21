@@ -1,7 +1,7 @@
 import { useGameState } from './gameState.tsx';
 import PlayerSelect from './playerSelect.tsx';
-import GameArea from './GameArea';
-import GameOverOverlay from './GameOver';
+import GameArea from './GameArea.tsx';
+import GameOverOverlay from './GameOver.tsx';
 import { useNavigate } from "react-router-dom";
 
 export default function Pro_main_area() {

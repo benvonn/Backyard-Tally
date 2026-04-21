@@ -1,4 +1,4 @@
-import Player from './logic/gameLogic';
+import Player from './logic/gameLogic.tsx';
 
 interface Props {
   player1: Player;

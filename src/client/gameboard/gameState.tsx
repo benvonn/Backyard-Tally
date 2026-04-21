@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import Player from "./logic/gameLogic";
+import Player from "./logic/gameLogic.tsx";
 
 interface GameState {
   users: { id: number; name: string }[];
