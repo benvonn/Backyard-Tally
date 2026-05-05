@@ -1,9 +1,9 @@
 // components/game/GameArea.tsx
-import RoundButton from './RoundButton.tsx';
-import GameEndButton from './../components/EndGame.tsx';
-import GlitchyTouchButton from './../components/StyledTouchButton.tsx';
-import ScoreBoard from './ScoreBoard.tsx';
-import Player from './logic/gameLogic.tsx';
+import RoundButton from './RoundButton';
+import GameEndButton from '../components/endGameButton';
+import GlitchyTouchButton from '../components/glitchyterminal_button/styledTouchButton';
+import ScoreBoard from './ScoreBoard';
+import Player from './logic/gameLogic';
 
 interface Props {
   player1: Player;

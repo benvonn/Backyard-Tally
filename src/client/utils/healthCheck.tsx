@@ -1,6 +1,7 @@
 // LoadingScreen.tsx
 import React, { useState, useEffect, useRef } from "react";
 import styled from "@emotion/styled";
+import BASE_URL from "../../config"
 
 const StyledButton = styled.button`
   padding: 0.5rem 1rem;
@@ -31,9 +32,8 @@ const StyledButtonOutline = styled(StyledButton)`
   border: 2px solid #0f0;
 `;
 
-const URL = "";
-const HEALTH_CHECK_URL = `/api/health`;
-const USERS_URL = `/api/users`;
+const HEALTH_CHECK_URL = `${BASE_URL}/api/health`;
+const USERS_URL = `${BASE_URL}/api/users`;
 const POLLING_INTERVAL = 2000;
 const TIMEOUT_DURATION = 30000;
 

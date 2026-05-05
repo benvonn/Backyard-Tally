@@ -1,54 +1,63 @@
-// AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import isValidOfflineToken from '../user-profile/ValidToken';
 
-const AuthContext = createContext();
-
-export function useAuth() {
-  return useContext(AuthContext);
+interface UserProfile {
+  name: string;
+  [key: string]: any;
 }
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+interface AuthContextType {
+  user: UserProfile | null;
+  login: (userData: UserProfile, token: string) => void;
+  logout: () => void;
+  isLoggedIn: () => boolean;
+  loading: boolean;
+}
 
-  //Check auth status (validates token)
-  const checkAuthStatus = () => {
-    const userProfile = JSON.parse(localStorage.getItem("userProfile"));
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  return context;
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const checkAuthStatus = (): UserProfile | null => {
+    const userProfile = JSON.parse(localStorage.getItem("userProfile") || "null");
     const offlineToken = localStorage.getItem("offlineToken");
 
     if (userProfile && offlineToken && isValidOfflineToken(offlineToken)) {
       return userProfile;
     }
-    
-    // Clean up invalid session
+
     localStorage.removeItem("userProfile");
     localStorage.removeItem("offlineToken");
     return null;
   };
 
-  //Login method that updates context AND localStorage
-  const login = (userData, token) => {
+  const login = (userData: UserProfile, token: string) => {
     setUser(userData);
     localStorage.setItem("userProfile", JSON.stringify(userData));
     localStorage.setItem("offlineToken", token);
   };
 
-  // New: Logout method
   const logout = () => {
     setUser(null);
     localStorage.removeItem("userProfile");
     localStorage.removeItem("offlineToken");
   };
 
-  // Check auth on mount
   useEffect(() => {
     const user = checkAuthStatus();
     setUser(user);
     setLoading(false);
   }, []);
 
-  const value = {
+  const value: AuthContextType = {
     user,
     login,
     logout,

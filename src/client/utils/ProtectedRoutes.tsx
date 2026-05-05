@@ -17,5 +17,5 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     return <Navigate to="/user/profile" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 }

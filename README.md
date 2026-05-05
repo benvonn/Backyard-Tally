@@ -8,7 +8,7 @@ BackyardTally (BYT) is an offline-first scoring application designed for cornhol
   - One-finger tap to add or subtract 1 point  
   - Two-finger tap to add or subtract 3 points  
 
-- Real-time dual-team scoreboard with clear, responsive layout optimized for outdoor visibility
+- Real-time dual scoreboard with clear, responsive layout optimized for outdoor visibility
 
 - Automatic game history tracking, including date, final scores, and match duration
 
@@ -31,9 +31,9 @@ Note: Although Tailwind CSS appears in devDependencies, the production UI is imp
 
 ## Usage
 
-Open the app in a modern mobile browser. For the best experience, add it to your home screen to launch like a native app. Start a game and use taps to adjust scores—BYT handles the rest automatically.
+Upon opening the link, you'll be greeted by a brief loading screen. For first time use, it's recommended to be connected to wifi to setup. It will check for connection if none, then continue in offline mode.
 
-All data remains on your device and is never transmitted externally.
+ The flow is very simple
 
 ## Development
 

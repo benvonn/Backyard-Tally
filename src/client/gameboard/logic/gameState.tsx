@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import Player from "./logic/gameLogic.tsx";
+import Player from "./gameLogic";
 
 interface GameState {
   users: { id: number; name: string }[];
@@ -63,16 +63,21 @@ export function useGameState() {
   }, [gameState]);
 
   const startGame = () => {
-    const { selectedPlayer1, selectedPlayer2, users } = gameState;
+    const { selectedPlayer1, selectedPlayer2 } = gameState;
     if (!selectedPlayer1 || !selectedPlayer2) return alert("Please select both players!");
     if (selectedPlayer1 === selectedPlayer2) return alert("Please select different players!");
 
-    const user1 = users.find(u => u.id === selectedPlayer1);
-    const user2 = users.find(u => u.id === selectedPlayer2);
+    const allUsers = gameState.users.length > 0
+      ? gameState.users
+      : JSON.parse(localStorage.getItem("allUsers") || "[]");
+
+    const user1 = allUsers.find((u: { id: number }) => u.id === selectedPlayer1);
+    const user2 = allUsers.find((u: { id: number }) => u.id === selectedPlayer2);
     if (!user1 || !user2) return alert("Selected users not found!");
 
     setGameState(prev => ({
       ...prev,
+      users: allUsers,
       player1: new Player(user1.id, user1.name),
       player2: new Player(user2.id, user2.name),
       gameStarted: true,

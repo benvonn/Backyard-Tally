@@ -1,7 +1,7 @@
 // StyledTouchButton.tsx
 import React, { ReactNode, useRef, useEffect, useCallback, useMemo } from 'react';
 import TouchButton from './TouchControls'; // Import the original TouchControls
-import FaultyTerminal from './TouchBackground.tsx'; // Adjust path to FaultyTerminal
+import FaultyTerminal from './TouchBackground'; // Adjust path to FaultyTerminal
 
 interface StyledTouchButtonProps {
  onPlusTap?: () => void; // Handler for the upper region (for +1 / +3)

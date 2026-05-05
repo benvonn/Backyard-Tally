@@ -1,10 +1,10 @@
-import { useGameState } from './gameState.tsx';
-import PlayerSelect from './playerSelect.tsx';
-import GameArea from './GameArea.tsx';
-import GameOverOverlay from './GameOver.tsx';
+import { useGameState } from './logic/gameState';
+import PlayerSelect from './playerSelect';
+import GameArea from './gameArea';
+import GameOverOverlay from './gameOver';
 import { useNavigate } from "react-router-dom";
 
-export default function Pro_main_area() {
+export default function Board() {
   const { gameState, startGame, resetGame, handleGameEnd, handleEndRound, throwBagPlayer1, throwBagPlayer2, setGameState } = useGameState();
   const { player1, player2, gameEnded, gameStarted, currentRound, roundHistory, users, selectedPlayer1, selectedPlayer2 } = gameState;
   const navigate = useNavigate();

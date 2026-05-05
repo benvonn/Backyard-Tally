@@ -1,7 +1,7 @@
-// components/RoundButton.tsx
 import React from 'react';
-import { saveRoundData } from '../utils/gameStorage.tsx';
-import Player from './logic/gameLogic.tsx';
+import styled from '@emotion/styled';
+import { saveRoundData } from '../utils/gameStorage';
+import Player from './logic/gameLogic';
 
 interface RoundButtonProps {
   player1: InstanceType<typeof Player>;
@@ -10,9 +10,36 @@ interface RoundButtonProps {
   onEndRound: (updatedPlayer1: InstanceType<typeof Player>, updatedPlayer2: InstanceType<typeof Player>) => void;
 }
 
+const StyledButton = styled.button`
+  background: #000000ff;
+  border: 2.5px solid #0f0;
+  color: #0f0;
+  font-family: VT323;
+  font-size: 25px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  margin: 10px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #0f0;
+    color: #000;
+    border-color: #0f0;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus {
+    outline: 2px solid #1aff00;
+    outline-offset: 2px;
+  }
+`;
+
 export default function RoundButton({ player1, player2, currentRound, onEndRound }: RoundButtonProps) {
   const handleEndRound = () => {
-    console.log("P1 bags on:", player1.roundBagsOn, "bags in:", player1.roundBagsIn);
+     console.log("P1 bags on:", player1.roundBagsOn, "bags in:", player1.roundBagsIn);
     console.log("P2 bags on:", player2.roundBagsOn, "bags in:", player2.roundBagsIn);
     
     const roundData = {
@@ -77,20 +104,8 @@ export default function RoundButton({ player1, player2, currentRound, onEndRound
   };
 
   return (
-    <button 
-      onClick={handleEndRound}
-      style={{
-        padding: '0.5rem 1rem',
-        fontSize: '20px',
-        fontFamily: 'VT323',
-        background: '#0f0',
-        color: '#000',
-        border: '2.5px solid #0f0',
-        cursor: 'pointer',
-        margin: '10px'
-      }}
-    >
+    <StyledButton onClick={handleEndRound}>
       End Round
-    </button>
+    </StyledButton>
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import Modal from "./modal.tsx";
+import Modal from "./modal";
 import styled from "@emotion/styled";
 
 const StyledButton = styled.button`
@@ -47,7 +47,7 @@ const HamburgerStyled = styled.button`
     outline-offset: 2px;
   }`
 
-export default function Hamburg() {
+export default function Hamburger() {
   const [isOpened, setIsOpened] = React.useState(false);
   const navigate = useNavigate();
 
