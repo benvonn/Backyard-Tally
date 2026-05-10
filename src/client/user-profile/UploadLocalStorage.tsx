@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
-import gameDataManager from "../utils/Manager";
+import gameDataManager from "../utils/dataManager";
 import styled from "@emotion/styled";
-
+import BASE_URL from "../../config"
 interface Player {
   id: number | string; 
   name: string;
@@ -251,7 +251,7 @@ export default function GameDataTable({ isOpen, onToggle }: GameDataTableProps) 
     }
 
     try {
-      const res = await fetch(`${URL}/api/GameData/Update/DB`, {
+      const res = await fetch(`${BASE_URL}/api/GameData/Update/DB`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data: userGames })

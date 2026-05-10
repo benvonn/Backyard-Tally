@@ -97,5 +97,5 @@ const SContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
   border-radius: 0px;
-  border: 5px solid #0f0; /* Added green border similar to App.js */
+  border: 5px solid #0f0;
 `;

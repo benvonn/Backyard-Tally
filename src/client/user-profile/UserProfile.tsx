@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import UserDropdown from "../components/userdropdown.tsx";
-import isValidOfflineToken from "./ValidToken.js";
+import UserDropdown from "../components/userdropdown";
+import isValidOfflineToken from "./ValidToken";
 import { useNavigate } from "react-router";
-import { getUserMetadata, setUserMetadata } from "../utils/onboarding.tsx";
-import { useAuth } from "../contexts/AuthContext.js";
-import GameDataTable from "./UploadLocalStorage.tsx";
+import { getUserMetadata, setUserMetadata } from "../utils/onboarding";
+import { useAuth } from "../contexts/AuthContext";
+import GameDataTable from "./UploadLocalStorage";
 import styled from "@emotion/styled";
+import BASE_URL from "../../config"
 
-const URL = "";
-const USERS_URL = `${URL}/api/users`;
-const LOGIN_URL = `${URL}/api/users/login`;
+const USERS_URL = `${BASE_URL}/api/users`;
+const LOGIN_URL = `${BASE_URL}/api/users/login`;
 
 interface UserProfile {
   id: number | string
@@ -28,7 +28,7 @@ const LogoutButtonStyle = styled.button`
   font-size: 20px;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  width: 18%;
+  width: 100%;
   text-align: center;
   transition: all 0.2s ease;
 

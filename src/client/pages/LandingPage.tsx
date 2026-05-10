@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Modal from "../components/modal.tsx"; 
+import Modal from "../components/modal"; 
 import { useNavigate } from "react-router-dom";
-import UserSetup from "../setup/UserSetup.tsx"; 
-import LoadingScreen from "../utils/LoadingScreen.tsx"; 
-import isValidOfflineToken from "../user-profile/ValidToken.js";
+import UserSetup from "../user-profile/userSetup"; 
+import LoadingScreen from "../utils/healthCheck"; 
+import isValidOfflineToken from "../user-profile/ValidToken";
 import styled from "@emotion/styled";
 
 const StyledButton = styled.button`

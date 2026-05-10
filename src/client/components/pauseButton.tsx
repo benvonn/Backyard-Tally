@@ -1,6 +1,6 @@
 import React from 'react';
-import PauseButton from './Icons/PauseButton.tsx';
-import Modal from './modal.tsx';
+import PauseButton from './Icons/PauseButton';
+import Modal from './modal';
 
 interface PauseProps {
     onRestart: () => void;

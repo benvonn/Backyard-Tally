@@ -1,16 +1,15 @@
-// App.js
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import { useContext } from 'react';
-import LandingPage from './client/pages/LandingPage.tsx';
-import UserProfile from './client/user-profile/UserProfile.tsx';
-import UserSetup from './client/setup/UserSetup.tsx';
-import Home from './client/pages/Home.tsx';
-import History from './client/history/History.js';
-import { AuthProvider } from './client/contexts/AuthContext.js';
-import ProtectedRoute from './client/components/ProtectedRoutes.tsx';
-import Hamburg from './client/components/hamburg.tsx';
-import ComingSoon from './client/pages/comingSoon.tsx';
+import LandingPage from './client/pages/LandingPage';
+import UserProfile from './client/user-profile/UserProfile';
+import UserSetup from './client/user-profile/userSetup';
+import Home from './client/pages/Home';
+import { AuthProvider } from './client/contexts/AuthContext';
+import ProtectedRoute from './client/utils/ProtectedRoutes';
+import Hamburger from './client/components/hamburgerButton';
+import ComingSoon from './client/pages/comingSoon';
+import History from './client/pages/history/History'
 
 function App() { // Remove toggleTheme and currentTheme props
   // Define the dark theme colors directly
@@ -49,7 +48,7 @@ function App() { // Remove toggleTheme and currentTheme props
         right: '1.5vw',
         zIndex: 10
       }}>
-        <Hamburg />
+        <Hamburger />
       </div>
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -68,7 +67,7 @@ function App() { // Remove toggleTheme and currentTheme props
           <ProtectedRoute>
             <History/>
           </ProtectedRoute>
-        } />
+         } />
         <Route path="/comingSoon" element={<ComingSoon />} />
       </Routes>
       </AuthProvider>

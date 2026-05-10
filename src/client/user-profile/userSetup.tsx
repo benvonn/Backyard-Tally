@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserMetadata, setUserMetadata } from "../utils/onboarding.tsx";
+import { getUserMetadata, setUserMetadata } from "../utils/onboarding";
+import BASE_URL from "../../config";
 
 interface UserSetupProps {
   onComplete?: () => void;
 }
 
 export default function UserSetup({ onComplete }: UserSetupProps) { 
-    const URL = '';
     const [name, setName] = useState<string>("");
     const [passcode, setPasscode] = useState<string>("");
     const [error, setError] = useState<string>("");
@@ -26,7 +26,7 @@ export default function UserSetup({ onComplete }: UserSetupProps) {
         setLoading(true);
 
         try {
-            const res = await fetch(`${URL}/api/users`, {
+            const res = await fetch(`${BASE_URL}/api/users`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: name.trim(), passcode })

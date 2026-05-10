@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Pro_Main_Area from "../gameboard/pro_setup/pro_main_area.tsx";
+import Board from "../gameboard/Board";
+import BASE_URL from "../../config"
 
-const USERS_URL = `/api/users`;
+const USERS_URL = `${BASE_URL}/api/users`;
 
 export default function Home() {
     const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
@@ -42,7 +43,7 @@ export default function Home() {
     
     return (
         <div>
-            <Pro_Main_Area />
+            <Board />
         </div>
     );
 }
