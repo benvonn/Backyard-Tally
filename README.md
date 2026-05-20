@@ -1,7 +1,7 @@
 # BackyardTally (BYT)
 Deployment Link: https://byt-fe.onrender.com
 
-BackyardTally (BYT) is an offline-first scoring application designed for cornhole. Built with simplicity and usability in mind, BYT enables players to track game scores effortlessly using intuitive touchscreen gestures—no internet connection required.
+BackyardTally (BYT) is an offline-first scoring application designed for cornhole. Built with simplicity and usability in mind, BYT enables players to track game scores effortlessly using intuitive touchscreen gestures; no internet connection required.
 
 ## Features
 
@@ -15,7 +15,7 @@ BackyardTally (BYT) is an offline-first scoring application designed for cornhol
 
 - Persistent player statistics such as wins, losses, and scoring trends
 
-- Fully offline functionality using browser localStorage—no accounts, ads, or network permissions
+- Fully offline functionality using browser localStorage; no accounts, ads, or network permissions
 
 - Mobile-optimized interface built for tablets and smartphones, supporting natural one- or two-handed interaction
 
