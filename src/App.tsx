@@ -11,37 +11,34 @@ import Hamburger from './client/components/hamburgerButton';
 import ComingSoon from './client/pages/comingSoon';
 import History from './client/pages/history/History'
 
-function App() { // Remove toggleTheme and currentTheme props
-  // Define the dark theme colors directly
+function App() {
   const darkTheme = {
-    background: '#000000ff', // Example dark background
-    text: '#0f0',       // Example light text
-    primary: '#0f0',    // Example primary color
-    // Add other dark theme properties here as needed
-  };
+    background: '#000000ff',
+    text: '#0f0',       
+    primary: '#0f0',    
+    };
 
   return (
     <div className="App" style={{ 
       background: darkTheme.background,
       color: darkTheme.text,
-      minHeight: '100vh',       // full viewport height
-      display: 'flex',          // enable flexbox
-      justifyContent: 'center', // center horizontally
-      alignItems: 'center',     // center vertically
+      minHeight: '100vh',       
+      display: 'flex',          
+      justifyContent: 'center', 
+      alignItems: 'center',     
       margin: 0,
       padding: 0,
       fontFamily: 'VT323'
     }}>
       <div id='borderApp' style={{border: `5px solid ${darkTheme.primary}`,
-        width: '99vw',           // responsive width
-        height: '98vh',          // responsive height      // optional
+        width: '99vw',           
+        height: '98vh',          
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         padding: '10px', }}>
       <AuthProvider>
-      {/* Remove the theme toggle button entirely */}
       <div style={{
         position: 'absolute',
         top: '2.5vh',
@@ -54,10 +51,8 @@ function App() { // Remove toggleTheme and currentTheme props
         <Route path="/" element={<LandingPage />} />
         <Route path="/user/setup/profile" element={<UserSetup />} />
         
-        {/* REMOVE ProtectedRoute from UserProfile - it's the LOGIN page! */}
         <Route path="/user/profile" element={<UserProfile />} />
         
-        {/* Keep ProtectedRoute only for actual protected pages */}
         <Route path="/home" element={
           <ProtectedRoute>
             <Home />

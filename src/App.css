@@ -52,15 +52,8 @@
     transform: rotate(360deg);
   }
 }
-@media screen and (orientation: portrait) {
-  html {
-    transform: rotate(90deg);
-    transform-origin: left top;
-    width: 100vh;
-    height: 100vw;
-    overflow-x: hidden;
-    position: absolute;
-    top: 100%;
-    left: 0;
+@media screen and (max-width: 767px), screen and (max-height: 767px) {
+  .App {
+    display: none;
   }
 }
