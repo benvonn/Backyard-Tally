@@ -51,49 +51,62 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  const fontSize = 10;
+  let columns = 0;
+  let drops: number[] = [];
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
+  const resizeCanvas = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    resizeCanvas();
+    const newColumns = Math.ceil(canvas.width / fontSize);
+    if (newColumns > columns) {
+      const extra = Array.from(
+        { length: newColumns - columns },
+        () => Math.floor(Math.random() * (canvas.height / fontSize))
+      );
+      drops = [...drops, ...extra];
+    } else {
+      drops = drops.slice(0, newColumns);
+    }
+    columns = newColumns;
+  };
 
-    const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split("");
-    const fontSize = 10;
-    const columns = Math.ceil(canvas.width / fontSize);
-    const drops: number[] = Array.from({ length: columns }, () => 1);
+  resizeCanvas();
 
-    const draw = () => {
-      if (!ctx) return;
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#0F0";
-      ctx.font = `${fontSize}px monospace`;
-      for (let i = 0; i < drops.length; i++) {
-        const text = characters[Math.floor(Math.random() * characters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
+  const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split("");
+
+  const draw = () => {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#0F0";
+    ctx.font = `${fontSize}px monospace`;
+    for (let i = 0; i < drops.length; i++) {
+      const text = characters[Math.floor(Math.random() * characters.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
       }
-    };
+      drops[i]++;
+    }
+  };
 
-    const interval = setInterval(draw, 33);
+  const interval = setInterval(draw, 33);
 
-    window.addEventListener("resize", resizeCanvas);
+  window.addEventListener("resize", resizeCanvas);
+  document.addEventListener("fullscreenchange", resizeCanvas); // fullscreen toggle doesn't always fire 'resize' reliably
 
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener("resize", resizeCanvas);
-    };
-  }, []);
+  return () => {
+    clearInterval(interval);
+    window.removeEventListener("resize", resizeCanvas);
+    document.removeEventListener("fullscreenchange", resizeCanvas);
+  };
+}, []);
 
   useEffect(() => {
     let pollInterval: ReturnType<typeof setInterval> | null = null;
