@@ -38,7 +38,7 @@ const POLLING_INTERVAL = 2000;
 const TIMEOUT_DURATION = 30000;
 
 interface LoadingScreenProps {
-  onHealthCheckComplete: (status: "healthy" | "error", errorDetails?: string) => void;
+  onHealthCheckComplete: (status: "healthy" | "error", errorDetails?: string, offline?: boolean) => void;
   userProfileExists: boolean;
 }
 
@@ -139,6 +139,30 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
         }
       }
     };
+    const syncOfflineProfile = async () => {
+      try {
+        const stored = localStorage.getItem("userProfile");
+        if (!stored) return;
+        const profile = JSON.parse(stored);
+        if (profile.synced) return; //already in the db, nothing to do
+
+        const res = await fetch(USERS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: profile.name, passcode: profile.passcode }),
+        });
+
+        if (!res.ok) return; // stays unsynced, retried on next successful health check
+
+        const data = await res.json().catch(() => ({}));
+        const updatedProfile = { ...profile, id: data.id ?? profile.id, synced: true };
+        delete updatedProfile.passcode; // don't need to keep it around once it's in the DB
+
+        localStorage.setItem("userProfile", JSON.stringify(updatedProfile));
+      } catch (e) {
+        // network dropped again mid-sync — leave it unsynced, will retry
+      }
+    };
 
     const checkHealth = async () => {
       try {
@@ -159,6 +183,7 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
               pollInterval = null;
             }
             await fetchUsers();
+            await syncOfflineProfile();
             onHealthCheckComplete("healthy");
           } else {
              setMessage(`System status: ${data.status || 'unknown'}. Still checking...`);
@@ -218,7 +243,7 @@ export default function LoadingScreen({ onHealthCheckComplete, userProfileExists
           <h2 style={styles.title}>Connection Failed</h2>
           <p style={styles.message}>Do you want to continue in Offline Mode? You will be able to save your stats later.</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <StyledButton onClick={() => onHealthCheckComplete("healthy")}>Yes</StyledButton>
+            <StyledButton onClick={() => onHealthCheckComplete("healthy", undefined, true)}>Yes</StyledButton>
             <StyledButtonOutline onClick={handleRetry}>Retry</StyledButtonOutline>
           </div>
         </div>

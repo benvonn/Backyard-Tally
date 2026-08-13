@@ -1,46 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Board from "../gameboard/Board";
-import BASE_URL from "../../config"
-
-const USERS_URL = `${BASE_URL}/api/users`;
+import { fetchUsersWithFallback } from "../utils/fetchUsers";
 
 export default function Home() {
     const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const navigate = useNavigate();
-    
+
     useEffect(() => {
-        fetchAndCacheUsers();
-        
+        fetchUsersWithFallback();
+
         const userProfile = JSON.parse(localStorage.getItem("userProfile") || "null");
-        
+
         if (!userProfile) {
             setLoading(false);
             return;
         }
-        
+
         if (userProfile.board) {
             setSelectedBoard(userProfile.board);
-        } 
-        
+        }
+
         setLoading(false);
     }, [navigate]);
-    
-    const fetchAndCacheUsers = async () => {
-        try {
-            const res = await fetch(USERS_URL);
-            if (res.ok) {
-                const data = await res.json();
-                localStorage.setItem("allUsers", JSON.stringify(data));
-            }
-        } catch (err) {}
-    };
-    
+
     if (loading) {
         return <div>Loading...</div>;
     }
-    
+
     return (
         <div>
             <Board />

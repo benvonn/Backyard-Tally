@@ -66,14 +66,17 @@ export default function LandingPage() {
         }
     }, [healthCheckStatus]);
 
-    const handleHealthCheckComplete = (status: "healthy" | "error", details?: string) => {
-        setHealthCheckStatus(status);
-        if (status === "healthy") {
-            sessionStorage.setItem("healthCheckCompleted", "true");
-        } else {
-            setErrorDetails(details || "An error occurred during the system check.");
-        }
-    };
+    const handleHealthCheckComplete = (status: "healthy" | "error", details?: string, offline?: boolean) => {
+    setHealthCheckStatus(status);
+    if (status === "healthy") {
+        sessionStorage.setItem("healthCheckCompleted", "true");
+        // remember if this pass was real or a forced offline continue
+        // UserSetup reads this to skip the network call entirely
+        sessionStorage.setItem("isOffline", offline ? "true" : "false");
+    } else {
+        setErrorDetails(details || "An error occurred during the system check.");
+    }
+};
 
     const userProfileExists = localStorage.getItem("userProfile") !== null;
 

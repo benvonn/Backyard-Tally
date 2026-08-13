@@ -3,20 +3,16 @@ import UserDropdown from "../components/userdropdown";
 import isValidOfflineToken from "./ValidToken";
 import { useNavigate } from "react-router";
 import { getUserMetadata, setUserMetadata } from "../utils/onboarding";
+import { fetchUsersWithFallback, User } from "../utils/fetchUsers";
 import { useAuth } from "../contexts/AuthContext";
 import GameDataTable from "./UploadLocalStorage";
 import styled from "@emotion/styled";
 import BASE_URL from "../../config"
 
-const USERS_URL = `${BASE_URL}/api/users`;
 const LOGIN_URL = `${BASE_URL}/api/users/login`;
 
 interface UserProfile {
   id: number | string
-  name: string;
-}
-interface User {
-  id: number | string;
   name: string;
 }
 
@@ -58,24 +54,7 @@ export default function UserProfile() {
   const { login } = useAuth();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(USERS_URL, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-        const data = await res.json();
-        setUsers(data);
-        localStorage.setItem("allUsers", JSON.stringify(data));
-      } catch (err) {
-        loadUsersFromCache();
-      }
-    };
-
-    fetchUsers();
+    fetchUsersWithFallback().then(setUsers);
   }, []);
 
   useEffect(() => {
@@ -105,12 +84,6 @@ export default function UserProfile() {
     checkOfflineLogin();
   }, [navigate]);
 
-  const loadUsersFromCache = () => {
-    const cachedUsers = localStorage.getItem("allUsers");
-    if (cachedUsers) {
-      setUsers(JSON.parse(cachedUsers));
-    }
-  };
   const togglePanel = (panel: string) => {
     setActivePanel((prev) => (prev === panel ? null : panel));
   }
