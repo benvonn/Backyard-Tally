@@ -3,7 +3,7 @@ import Modal from "../components/modal";
 import { useNavigate } from "react-router-dom";
 import UserSetup from "../user-profile/userSetup"; 
 import LoadingScreen from "../utils/healthCheck"; 
-import isValidOfflineToken from "../user-profile/ValidToken";
+//import isValidOfflineToken from "../user-profile/ValidToken";
 import styled from "@emotion/styled";
 
 const StyledButton = styled.button`
@@ -40,25 +40,25 @@ export default function LandingPage() {
     const [errorDetails, setErrorDetails] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (healthCheckStatus !== "healthy") return;
+    // useEffect(() => {
+    //     if (healthCheckStatus !== "healthy") return;
 
-        const storedToken = localStorage.getItem("offlineToken");
-        const storedProfileStr = localStorage.getItem("userProfile");
-        const storedProfile = storedProfileStr ? JSON.parse(storedProfileStr) : null;
+    //     const storedToken = localStorage.getItem("offlineToken");
+    //     const storedProfileStr = localStorage.getItem("userProfile");
+    //     const storedProfile = storedProfileStr ? JSON.parse(storedProfileStr) : null;
 
-        if (storedToken && storedProfile) {
-            try {
-                const isValid = isValidOfflineToken(storedToken);
-                if (isValid) {
-                    navigate("/home", { replace: true });
-                    return;
-                }
-            } catch (e) {
-                console.error("Token validation failed:", e);
-            }
-        }
-    }, [healthCheckStatus, navigate]);
+    //     if (storedToken && storedProfile) {
+    //         try {
+    //             const isValid = isValidOfflineToken(storedToken);
+    //             if (isValid) {
+    //                 navigate("/home", { replace: true });
+    //                 return;
+    //             }
+    //         } catch (e) {
+    //             console.error("Token validation failed:", e);
+    //         }
+    //     }
+    // }, [healthCheckStatus, navigate]);
 
     useEffect(() => {
         if (healthCheckStatus === "checking" && sessionStorage.getItem("healthCheckCompleted") === "true") {

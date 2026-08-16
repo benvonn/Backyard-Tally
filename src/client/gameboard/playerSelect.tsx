@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import UserDropdown from '../components/userdropdown';
+import { GUEST_ID, GUEST_NAME } from '../utils/guestPlayer';
 
 interface User {
   id: number;
@@ -73,8 +74,9 @@ export default function PlayerSelect({ users: propUsers, selectedPlayer1, select
     } catch { return []; }
   });
 
+const GUEST_USER: User = { id: GUEST_ID, name: GUEST_NAME };
 
-  const merged = [...localUsers, ...propUsers];
+const merged = [GUEST_USER, ...localUsers, ...propUsers];
 const seen = new Set<number>();
 const users = merged.filter(u => {
   if (seen.has(u.id)) return false;

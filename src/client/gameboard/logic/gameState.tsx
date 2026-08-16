@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Player from "./gameLogic";
+import { GUEST_ID, GUEST_NAME } from '../../utils/guestPlayer';
 
 interface GameState {
   users: { id: number; name: string }[];
@@ -62,7 +63,7 @@ export function useGameState() {
     localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(serializableState));
   }, [gameState]);
 
-  const startGame = () => {
+const startGame = () => {
     const { selectedPlayer1, selectedPlayer2 } = gameState;
     if (!selectedPlayer1 || !selectedPlayer2) return alert("Please select both players!");
     if (selectedPlayer1 === selectedPlayer2) return alert("Please select different players!");
@@ -71,8 +72,13 @@ export function useGameState() {
       ? gameState.users
       : JSON.parse(localStorage.getItem("allUsers") || "[]");
 
-    const user1 = allUsers.find((u: { id: number }) => u.id === selectedPlayer1);
-    const user2 = allUsers.find((u: { id: number }) => u.id === selectedPlayer2);
+    const resolveUser = (id: number) =>
+      id === GUEST_ID
+        ? { id: GUEST_ID, name: GUEST_NAME }
+        : allUsers.find((u: { id: number }) => u.id === id);
+
+    const user1 = resolveUser(selectedPlayer1);
+    const user2 = resolveUser(selectedPlayer2);
     if (!user1 || !user2) return alert("Selected users not found!");
 
     setGameState(prev => ({
