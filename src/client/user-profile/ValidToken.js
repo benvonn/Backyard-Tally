@@ -8,4 +8,4 @@ export default function isValidOfflineToken(token) {
     console.warn("Invalid token format", e);
     return false;
   }
-}//hello
+}
