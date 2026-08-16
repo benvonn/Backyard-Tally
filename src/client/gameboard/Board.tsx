@@ -32,7 +32,7 @@ export default function Board() {
         onEndRound={handleEndRound} onGameEnd={handleGameEnd}
       />
       {gameEnded && (
-        <GameOverOverlay player1={player1} player2={player2} onReset={resetGame} onHome={() => navigate('/home')} />
+        <GameOverOverlay player1={player1} player2={player2} onReset={resetGame} onHome={() => navigate('/user/profile')} />
       )}
     </div>
   );

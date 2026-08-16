@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Player from './logic/gameLogic';
+import { useNavigate } from 'react-router';
 
 interface Props {
   player1: Player;
@@ -66,7 +67,8 @@ const StyledButton = styled.button`
   }
 `;
 
-export default function GameOverOverlay({ player1, player2, onReset, onHome }: Props) {
+export default function GameOverOverlay({ player1, player2, onReset, onHome}: Props) {
+  const nav = useNavigate()
   const winner =
     player1.totalPoints > player2.totalPoints ? `${player1.name} wins!`
     : player2.totalPoints > player1.totalPoints ? `${player2.name} wins!`
